@@ -12,6 +12,12 @@ WORKDIR /app
 COPY server ./server
 COPY packages/core ./packages/core
 
+WORKDIR /app/packages/core
+RUN npm ci
+RUN rm -f tsconfig.build.tsbuildinfo
+RUN npm run build
+RUN test -f dist/index.js
+
 WORKDIR /app/server
 RUN npm run prisma:generate
 RUN rm -f tsconfig.tsbuildinfo
@@ -27,6 +33,7 @@ COPY --from=builder /app/server/package*.json ./
 COPY --from=builder /app/server/node_modules ./node_modules
 COPY --from=builder /app/server/dist ./dist
 COPY --from=builder /app/server/prisma ./prisma
+COPY --from=builder /app/packages/core /app/packages/core
 
 EXPOSE 3000
 
