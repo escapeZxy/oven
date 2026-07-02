@@ -14,6 +14,7 @@ COPY packages/core ./packages/core
 
 WORKDIR /app/server
 RUN npm run prisma:generate
+RUN rm -f tsconfig.tsbuildinfo
 RUN npm run build
 RUN test -f dist/main.js
 

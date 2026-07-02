@@ -5,5 +5,6 @@ dist
 coverage
 server/node_modules
 server/dist
+server/tsconfig.tsbuildinfo
 server/dev.db
 server/tmp-api-check.db
