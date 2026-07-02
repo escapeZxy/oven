@@ -1,0 +1,9 @@
+node_modules
+dist
+.git
+.trae
+coverage
+server/node_modules
+server/dist
+server/dev.db
+server/tmp-api-check.db

@@ -1,0 +1,110 @@
+<div class="auth-page">
+  <mat-card class="auth-card">
+    <div class="hero">
+      <p class="eyebrow">Oven</p>
+      <h1>{{ mode() === 'login' ? '登录继续训练' : '创建账户开始训练' }}</h1>
+      <p class="subtitle">
+        {{ mode() === 'login'
+          ? '恢复你的计划、日志和训练历史。'
+          : '注册后立即创建会话，直接进入训练主路径。'
+        }}
+      </p>
+    </div>
+
+    @if (errorMessage(); as error) {
+      <div class="error-banner" role="alert">{{ error }}</div>
+    }
+
+    @if (mode() === 'login') {
+      <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="submitLogin()">
+        <mat-form-field appearance="outline">
+          <mat-label>邮箱或用户名</mat-label>
+          <input matInput type="text" formControlName="identifier" autocomplete="username" />
+          @if (loginForm.controls.identifier.touched && loginForm.controls.identifier.invalid) {
+            <mat-error>请输入邮箱或用户名。</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>密码</mat-label>
+          <input
+            matInput
+            type="password"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+          @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
+            <mat-error>密码至少 8 位。</mat-error>
+          }
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="submit-button"
+          [disabled]="isSubmitting()"
+        >
+          {{ isSubmitting() ? '登录中...' : '登录' }}
+        </button>
+      </form>
+
+      <p class="switch-text">
+        还没有账户？
+        <a routerLink="/auth/register">去注册</a>
+      </p>
+    } @else {
+      <form class="auth-form" [formGroup]="registerForm" (ngSubmit)="submitRegister()">
+        <mat-form-field appearance="outline">
+          <mat-label>邮箱</mat-label>
+          <input matInput type="email" formControlName="email" autocomplete="email" />
+          @if (registerForm.controls.email.touched && registerForm.controls.email.invalid) {
+            <mat-error>请输入有效邮箱。</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>用户名</mat-label>
+          <input matInput type="text" formControlName="username" autocomplete="username" />
+          <mat-hint>只允许字母、数字、下划线和短横线。</mat-hint>
+          @if (registerForm.controls.username.touched && registerForm.controls.username.invalid) {
+            <mat-error>用户名至少 3 位，且不能包含空格。</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>显示名</mat-label>
+          <input matInput type="text" formControlName="displayName" autocomplete="nickname" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>密码</mat-label>
+          <input
+            matInput
+            type="password"
+            formControlName="password"
+            autocomplete="new-password"
+          />
+          @if (registerForm.controls.password.touched && registerForm.controls.password.invalid) {
+            <mat-error>密码至少 8 位。</mat-error>
+          }
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="submit-button"
+          [disabled]="isSubmitting()"
+        >
+          {{ isSubmitting() ? '注册中...' : '注册并进入' }}
+        </button>
+      </form>
+
+      <p class="switch-text">
+        已有账户？
+        <a routerLink="/auth/login">去登录</a>
+      </p>
+    }
+  </mat-card>
+</div>

@@ -1,0 +1,198 @@
+<div class="min-h-screen bg-slate-50">
+  @if (todaysWorkout(); as workout) {
+    <!-- Hero Header -->
+    <div class="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 pt-12 pb-24 text-white shadow-xl">
+      <!-- Decoration -->
+      <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
+      <div class="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-purple-500/20 blur-3xl"></div>
+
+      <div class="max-w-4xl mx-auto px-6 relative z-10">
+        <div class="flex items-center gap-4 mb-6">
+          <a mat-icon-button routerLink="/workout-log" class="!bg-white/10 !text-white backdrop-blur-md">
+            <mat-icon>arrow_back</mat-icon>
+          </a>
+          <span class="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white backdrop-blur-md">
+            {{ workout.planName }}
+          </span>
+        </div>
+        <h1 class="text-4xl font-black mb-2">{{ workout.dayName }}</h1>
+        <p class="text-indigo-100 text-lg opacity-90">保持专注，完成今日目标！</p>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-6 -mt-12 pb-32 relative z-20">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-8">
+        <section
+          class="rounded-3xl border border-indigo-100 bg-white/95 p-5 shadow-sm"
+          aria-labelledby="session-boundary-title">
+          <div class="flex items-start gap-3">
+            <div class="mt-1 flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-600">
+              <mat-icon>cloud_done</mat-icon>
+            </div>
+            <div class="space-y-2">
+              <h2 id="session-boundary-title" class="text-base font-bold text-slate-900">
+                草稿与正式记录分离
+              </h2>
+              <p class="text-sm leading-6 text-slate-600">
+                当前页面输入会自动保存在本地草稿，仅用于恢复训练过程。只有点击“完成训练”或“跳过今日”并且服务端提交成功后，才会生成正式训练记录并推进计划进度。
+              </p>
+              @if (hasRestoredDraft()) {
+                <p
+                  class="rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700"
+                  role="status"
+                  aria-live="polite">
+                  {{ getDraftRestoredText() }}
+                </p>
+              }
+              @if (hasConflictNotice()) {
+                <p
+                  class="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-800"
+                  role="status"
+                  aria-live="polite">
+                  {{ getConflictNoticeText() }}
+                </p>
+              }
+            </div>
+          </div>
+        </section>
+
+        <div formArrayName="exercises" class="space-y-8">
+          @for (exerciseCtrl of exercises.controls; track $index; let exIndex = $index) {
+            <div [formGroupName]="exIndex" class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
+              <!-- Exercise Header -->
+              <div class="bg-slate-50/50 p-6 flex justify-between items-center border-b border-slate-100">
+                <div class="flex items-center gap-4">
+                  <div class="h-12 w-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xl">
+                    {{ exIndex + 1 }}
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold text-slate-900">{{ exerciseCtrl.get('name')?.value }}</h3>
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
+                      <span class="text-xs font-medium text-slate-500 flex items-center gap-1">
+                        <mat-icon class="!w-4 !h-4 !text-base">refresh</mat-icon>
+                        建议 {{ exerciseCtrl.get('suggestedSets')?.value }} 组
+                      </span>
+                      <span class="text-xs font-medium text-slate-500 flex items-center gap-1">
+                        <mat-icon class="!w-4 !h-4 !text-base">reorder</mat-icon>
+                        建议 {{ exerciseCtrl.get('suggestedReps')?.value }} 次
+                      </span>
+                      <span class="text-xs font-medium text-indigo-500 flex items-center gap-1">
+                        <mat-icon class="!w-4 !h-4 !text-base">history</mat-icon>
+                        {{ getHistoryText(exerciseCtrl.get('exerciseId')?.value) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sets List -->
+              <div class="p-6">
+                <div formArrayName="sets" class="space-y-4">
+                  <div class="grid grid-cols-12 gap-4 px-2 mb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                    <div class="col-span-1 text-center">#</div>
+                    <div class="col-span-5">重量 (KG)</div>
+                    <div class="col-span-5">次数</div>
+                    <div class="col-span-1 text-center">完成</div>
+                  </div>
+
+                  @for (setCtrl of getSets(exIndex).controls; track $index; let setIndex = $index) {
+                    <div [formGroupName]="setIndex"
+                         class="grid grid-cols-12 gap-4 items-center p-3 rounded-2xl bg-slate-50/50 hover:bg-slate-50 transition-colors"
+                         [class.bg-green-50]="setCtrl.get('completed')?.value"
+                         [class.border-green-200]="setCtrl.get('completed')?.value">
+                      <div class="col-span-1 flex justify-center">
+                        <span class="h-8 w-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-sm font-bold text-slate-600 shadow-sm"
+                              [class.bg-green-500]="setCtrl.get('completed')?.value"
+                              [class.text-white]="setCtrl.get('completed')?.value"
+                              [class.border-green-500]="setCtrl.get('completed')?.value">
+                          {{ setIndex + 1 }}
+                        </span>
+                      </div>
+                      <div class="col-span-5">
+                        <mat-form-field appearance="outline" class="w-full !mb-[-1.25em]">
+                          <input matInput type="number" formControlName="weight" placeholder="0">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-span-5">
+                        <mat-form-field appearance="outline" class="w-full !mb-[-1.25em]">
+                          <input matInput type="number" formControlName="reps" placeholder="0">
+                        </mat-form-field>
+                      </div>
+                      <div class="col-span-1 flex justify-center">
+                        <mat-checkbox color="primary" formControlName="completed" (change)="onSetCompleted($event.checked)"></mat-checkbox>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (errorMessage(); as errorMessage) {
+          <div
+            class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+            role="alert"
+            aria-live="assertive">
+            {{ errorMessage }}
+          </div>
+        }
+
+        <!-- Sticky Footer Actions -->
+        <div class="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-xl border-t border-slate-200 shadow-2xl z-50">
+          <div class="max-w-4xl mx-auto flex gap-4">
+            <button type="button" mat-stroked-button color="warn" class="!h-14 !px-8 !rounded-xl !text-lg !font-bold flex-1" (click)="onSkip()" [disabled]="isSubmitting()">
+              跳过今日
+            </button>
+            <button type="submit" mat-flat-button color="accent" class="!h-14 !px-12 !rounded-xl !text-lg !font-bold flex-[2] shadow-lg shadow-orange-500/20" [disabled]="!canSubmitCompletedWorkout() || isSubmitting()">
+              @if (isSubmitting()) {
+                <span class="flex items-center gap-2">
+                  正在保存...
+                </span>
+              } @else {
+                <span class="flex items-center gap-2">
+                  <mat-icon>check_circle</mat-icon>
+                  完成训练
+                </span>
+              }
+            </button>
+          </div>
+        </div>
+      </form>
+    </main>
+  } @else {
+    @if (isSessionBootstrapping()) {
+      <div class="flex flex-col items-center justify-center h-screen space-y-4">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p class="text-slate-500 font-medium">正在准备你的训练计划...</p>
+      </div>
+    } @else {
+      <div class="flex min-h-screen items-center justify-center bg-slate-50 px-6">
+        <div class="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+            <mat-icon class="!h-8 !w-8 !text-3xl">sync_problem</mat-icon>
+          </div>
+          <h2 class="mt-5 text-2xl font-bold text-slate-900">当前训练状态已变化</h2>
+          <p class="mt-3 text-sm leading-6 text-slate-600">
+            {{ getSessionUnavailableMessage() }}
+          </p>
+
+          <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <button
+              mat-stroked-button
+              type="button"
+              class="!rounded-xl"
+              [disabled]="syncStatus() === 'syncing'"
+              (click)="refreshSessionState()">
+              {{ syncStatus() === 'syncing' ? '同步中' : '重新同步' }}
+            </button>
+            <button mat-flat-button color="primary" type="button" class="!rounded-xl" (click)="goBackToDashboard()">
+              返回仪表盘
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

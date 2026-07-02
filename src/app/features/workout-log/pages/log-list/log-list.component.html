@@ -1,0 +1,305 @@
+<div class="max-w-7xl mx-auto p-6 space-y-10">
+  <!-- Header -->
+  <header class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-extrabold tracking-tight text-slate-900">我的训练仪表盘</h1>
+      <p class="text-slate-500 mt-1">管理你的健身计划并追踪每日进度</p>
+    </div>
+    <div class="flex flex-col items-stretch gap-3 md:items-end">
+      <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+        <div class="flex items-center justify-between gap-4">
+          <div class="min-w-0">
+            <p class="text-sm font-semibold text-slate-900">正式数据同步</p>
+            @if (syncStatus() === 'syncing') {
+              <p class="text-xs text-indigo-600">正在从服务端拉取最新正式数据...</p>
+            } @else if (syncStatus() === 'error') {
+              <p class="text-xs text-rose-600">{{ syncError() || '同步失败' }}</p>
+            } @else if (lastSyncedAt(); as syncedAt) {
+              <p class="text-xs text-slate-500">上次同步：{{ syncedAt | date:'short' }}</p>
+            } @else {
+              <p class="text-xs text-slate-500">尚未完成首次正式数据同步</p>
+            }
+          </div>
+          <button
+            mat-stroked-button
+            type="button"
+            class="!rounded-xl"
+            [disabled]="syncStatus() === 'syncing'"
+            (click)="syncNow()">
+            {{ syncStatus() === 'syncing' ? '同步中' : '立即同步' }}
+          </button>
+        </div>
+      </div>
+      @if (authService.currentUser(); as currentUser) {
+        <div class="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+          <div class="min-w-0">
+            <p class="text-sm font-semibold text-slate-900">
+              {{ currentUser.displayName || currentUser.username }}
+            </p>
+            <p class="truncate text-xs text-slate-500">{{ currentUser.email }}</p>
+          </div>
+          <button mat-stroked-button type="button" class="!rounded-xl" (click)="logout()">
+            退出
+          </button>
+        </div>
+      }
+      <a mat-flat-button color="primary" routerLink="new" class="!rounded-xl h-12">
+        <mat-icon class="mr-2">add</mat-icon>
+        创建新计划
+      </a>
+    </div>
+  </header>
+
+  <!-- Active Plan Hero Section -->
+  <section>
+    @if (workoutLogService.activePlan(); as activePlan) {
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 p-8 text-white shadow-2xl shadow-indigo-200/50">
+        <!-- Background Decoration -->
+        <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
+        <div class="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-purple-500/20 blur-3xl"></div>
+
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          <div class="space-y-6">
+            <div class="space-y-2">
+              <span class="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white backdrop-blur-md">
+                当前激活计划
+              </span>
+              <h2 class="text-4xl font-black">{{ activePlan.name }}</h2>
+              <p class="text-indigo-100 text-lg max-w-md">{{ activePlan.description }}</p>
+            </div>
+
+            <div class="space-y-3">
+              <div class="flex justify-between text-sm font-medium">
+                <span>总体进度</span>
+                <span>{{ (activePlan.currentDayIndex / (activePlan.trainingDays?.length || 1)) * 100 | number:'1.0-0' }}%</span>
+              </div>
+              <mat-progress-bar
+                mode="determinate"
+                [value]="(activePlan.currentDayIndex / (activePlan.trainingDays?.length || 1)) * 100"
+                class="!h-3 !rounded-full !bg-white/20">
+              </mat-progress-bar>
+              <p class="text-sm text-indigo-200">
+                已完成 {{ activePlan.currentDayIndex }} 天，共 {{ activePlan.trainingDays?.length || 0 }} 天
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-col items-center lg:items-end justify-center">
+            <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 w-full max-w-sm space-y-4">
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-full bg-accent flex items-center justify-center text-accent-foreground">
+                  <mat-icon>event</mat-icon>
+                </div>
+                <div>
+                  <p class="text-xs text-indigo-200 uppercase tracking-wider font-bold">今日目标</p>
+                  <p class="text-lg font-bold">{{ activePlan.trainingDays?.[activePlan.currentDayIndex]?.name || '未知训练日' }}</p>
+                </div>
+              </div>
+              <mat-divider class="!border-white/10"></mat-divider>
+              <a mat-flat-button color="accent" class="w-full !h-14 !text-lg !font-bold !rounded-xl shadow-lg shadow-orange-500/20" [routerLink]="['session', activePlan.userPlanId]">
+                开始今日锻炼
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="rounded-3xl border-2 border-dashed border-slate-200 p-12 text-center bg-slate-50/50">
+        <div class="mx-auto h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-4">
+          <mat-icon class="!w-10 !h-10 !text-4xl">fitness_center</mat-icon>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900">暂无活跃计划</h3>
+        <p class="text-slate-500 mt-2 mb-6">你还没有激活任何锻炼计划。从下面的计划库中选择一个开始吧！</p>
+        <button mat-stroked-button color="primary" class="!rounded-xl">浏览计划库</button>
+      </div>
+    }
+  </section>
+
+  <!-- Statistics Section -->
+  <section class="space-y-6">
+    <div class="flex items-center gap-3">
+      <div class="h-8 w-1 bg-indigo-500 rounded-full"></div>
+      <h2 class="text-2xl font-bold text-slate-900">训练数据</h2>
+    </div>
+
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms" class="bg-transparent">
+      <mat-tab label="周容量">
+        <div class="pt-4">
+          <app-volume-chart title="过去8周训练容量" [data]="weeklyVolume()"></app-volume-chart>
+        </div>
+      </mat-tab>
+      <mat-tab label="月容量">
+        <div class="pt-4">
+          <app-volume-chart title="过去6个月训练容量" [data]="monthlyVolume()"></app-volume-chart>
+        </div>
+      </mat-tab>
+      <mat-tab label="计划完成率">
+        <div class="pt-4">
+          @if (planCompletionSummary(); as summary) {
+            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                <div class="space-y-2">
+                  <p class="text-sm font-medium text-slate-500">已完结计划完成率</p>
+                  <p class="text-4xl font-black text-slate-900">{{ summary.completionRate | number:'1.0-0' }}%</p>
+                  <p class="text-sm text-slate-500">
+                    已完成 {{ summary.completedPlanCount }} 个，未完成 {{ summary.interruptedPlanCount }} 个，进行中 {{ summary.activePlanCount }} 个
+                  </p>
+                </div>
+
+                <div class="w-full max-w-xl space-y-4">
+                  <div class="flex justify-between text-sm font-medium text-slate-600">
+                    <span>统计口径</span>
+                    <span>{{ summary.closedPlanCount }} 个已完结计划</span>
+                  </div>
+                  <mat-progress-bar
+                    mode="determinate"
+                    [value]="summary.completionRate"
+                    aria-label="计划完成率"
+                    class="!h-3 !rounded-full">
+                  </mat-progress-bar>
+
+                  <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    <div class="rounded-2xl bg-emerald-50 px-4 py-3">
+                      <p class="text-xs font-medium text-emerald-700">已完成</p>
+                      <p class="mt-1 text-2xl font-bold text-emerald-900">{{ summary.completedPlanCount }}</p>
+                    </div>
+                    <div class="rounded-2xl bg-amber-50 px-4 py-3">
+                      <p class="text-xs font-medium text-amber-700">未完成</p>
+                      <p class="mt-1 text-2xl font-bold text-amber-900">{{ summary.interruptedPlanCount }}</p>
+                    </div>
+                    <div class="rounded-2xl bg-indigo-50 px-4 py-3">
+                      <p class="text-xs font-medium text-indigo-700">进行中</p>
+                      <p class="mt-1 text-2xl font-bold text-indigo-900">{{ summary.activePlanCount }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          } @else {
+            <div class="rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-slate-500">
+              暂无可用的计划完成率统计
+            </div>
+          }
+        </div>
+      </mat-tab>
+      <mat-tab label="动作趋势">
+        <div class="pt-4">
+          <app-exercise-trend-list [items]="exerciseTrendViews()"></app-exercise-trend-list>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+  <!-- History Plans Section -->
+  <section class="space-y-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-8 w-1 bg-indigo-400 rounded-full"></div>
+        <h2 class="text-2xl font-bold text-slate-900">历史记录</h2>
+      </div>
+      <mat-chip-listbox aria-label="History Filter">
+        <mat-chip-option selected (selectionChange)="historyFilter.set('all')">全部</mat-chip-option>
+        <mat-chip-option (selectionChange)="historyFilter.set('completed')">已完成</mat-chip-option>
+        <mat-chip-option (selectionChange)="historyFilter.set('interrupted')">未完成</mat-chip-option>
+      </mat-chip-listbox>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      @for (plan of filteredHistoryPlans(); track plan.userPlanId) {
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 flex items-center justify-between shadow-sm hover:shadow-md transition-all group">
+          <div class="flex items-center gap-4">
+            <div
+              class="h-12 w-12 rounded-xl flex items-center justify-center"
+              [class.bg-yellow-100]="plan.status === 'completed'"
+              [class.text-yellow-600]="plan.status === 'completed'"
+              [class.bg-slate-100]="plan.status !== 'completed'"
+              [class.text-slate-500]="plan.status !== 'completed'">
+              <mat-icon>{{ plan.status === 'completed' ? 'emoji_events' : 'pause_circle' }}</mat-icon>
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-900">{{ plan.name }}</h3>
+              <div class="flex items-center gap-2 text-xs text-slate-500 mt-1">
+                @if (plan.status === 'completed') {
+                  <span class="text-yellow-600 font-medium">已完成</span>
+                  <span>•</span>
+                  <span>{{ plan.startDate | date:'shortDate' }}</span>
+                } @else {
+                  <span class="text-slate-500 font-medium">进度: {{ (plan.currentDayIndex / (plan.trainingDays?.length || 1)) * 100 | number:'1.0-0' }}%</span>
+                  <span>•</span>
+                  <span>最后活跃: {{ plan.startDate | date:'shortDate' }}</span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            @if (plan.status === 'interrupted') {
+              <button mat-icon-button color="primary" matTooltip="继续训练" (click)="resumePlan(plan.userPlanId)">
+                <mat-icon>play_arrow</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" matTooltip="重新开始" (click)="restartPlan(plan.id)">
+                <mat-icon>replay</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" matTooltip="删除记录" (click)="archivePlan(plan.userPlanId)">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            } @else {
+              <button mat-icon-button color="primary" matTooltip="再次挑战" (click)="restartPlan(plan.id)">
+                <mat-icon>replay</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" matTooltip="删除记录" (click)="archivePlan(plan.userPlanId)">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            }
+          </div>
+        </div>
+      } @empty {
+        <div class="col-span-full py-8 text-center text-slate-400 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+          暂无历史记录
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Plan Library -->
+  <section class="space-y-6">
+    <div class="flex items-center gap-3">
+      <div class="h-8 w-1 bg-primary rounded-full"></div>
+      <h2 class="text-2xl font-bold text-slate-900">发现更多计划</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (plan of workoutLogService.availablePlans(); track plan.id) {
+        <mat-card class="!rounded-2xl !border-none !shadow-sm hover:!shadow-xl transition-all duration-300 group overflow-hidden cursor-pointer" [routerLink]="[plan.id]">
+          <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <mat-icon class="!w-16 !h-16 !text-6xl">fitness_center</mat-icon>
+          </div>
+          <mat-card-content class="p-6 space-y-4">
+            <div class="h-12 w-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 group-hover:bg-primary group-hover:text-white transition-colors">
+              <mat-icon>explore</mat-icon>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-slate-900 group-hover:text-primary transition-colors">{{ plan.name }}</h3>
+              <p class="text-slate-500 line-clamp-2 mt-1 text-sm">{{ plan.description }}</p>
+            </div>
+            <div class="flex items-center gap-4 pt-2">
+              <div class="flex items-center gap-1 text-xs font-medium text-slate-600">
+                <mat-icon class="!w-4 !h-4 !text-base">calendar_today</mat-icon>
+                {{ plan.trainingDays?.length || 0 }} 天周期
+              </div>
+              <div class="flex items-center gap-1 text-xs font-medium text-slate-600">
+                <mat-icon class="!w-4 !h-4 !text-base">layers</mat-icon>
+                初学者友好
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      } @empty {
+        <div class="col-span-full py-20 text-center bg-slate-50 rounded-3xl">
+          <mat-icon class="text-slate-300 !w-16 !h-16 !text-6xl mb-4">inventory_2</mat-icon>
+          <p class="text-slate-500 font-medium text-lg">计划库中还没有可用的锻炼计划</p>
+        </div>
+      }
+    </div>
+  </section>
+</div>

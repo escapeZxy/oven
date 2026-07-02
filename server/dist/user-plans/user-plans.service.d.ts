@@ -1,0 +1,35 @@
+import { UserPlanCompletionSummary, UserWorkoutPlan } from '@oven/core';
+import { PrismaService } from '../prisma/prisma.service';
+import { CommitUserPlanLogDto } from './dto/commit-user-plan-log.dto';
+import { CreateUserPlanDto } from './dto/create-user-plan.dto';
+import { GetUserPlansDto } from './dto/get-user-plans.dto';
+export declare class UserPlansService {
+    private readonly prisma;
+    constructor(prisma: PrismaService);
+    getById(id: string, userId: string): Promise<UserWorkoutPlan>;
+    getByUserId(userId: string, query?: GetUserPlansDto): Promise<UserWorkoutPlan[]>;
+    getActiveByUserId(userId: string): Promise<UserWorkoutPlan | null>;
+    getCompletionRateSummary(userId: string): Promise<UserPlanCompletionSummary>;
+    create(dto: CreateUserPlanDto, userId: string): Promise<UserWorkoutPlan>;
+    appendLog(id: string, dto: CommitUserPlanLogDto, userId: string): Promise<UserWorkoutPlan>;
+    resume(id: string, userId: string): Promise<UserWorkoutPlan>;
+    archive(id: string, userId: string): Promise<UserWorkoutPlan>;
+    private requireOwnedUserPlan;
+    private validatePlanOwnership;
+    private tryResolveIdempotentReplay;
+    private assertReplayMatchesExistingCommit;
+    private haveSameCompletedExercises;
+    private isClientRequestIdConflict;
+    private resolveCommitBoundary;
+    private ensureArchivable;
+    private throwCommitConflict;
+    private normalizePlanState;
+    private validateCompletedExercises;
+    private mapUserPlan;
+    private mapWorkoutLog;
+    private flattenWorkoutPlan;
+    private flattenScheduleItems;
+    private readSchedule;
+    private readTrainingDays;
+    private readCompletedExercises;
+}
