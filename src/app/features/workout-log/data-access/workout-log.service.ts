@@ -13,6 +13,7 @@ import { WORKOUT_SERVICE } from '../../../core.providers';
 import { AuthService } from '../../../auth/auth.service';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { normalizePersistedPlanDefinition } from '../pages/plan-create/plan-node-id';
 
 interface CommitUserPlanLogRequest {
   clientRequestId?: string;
@@ -598,8 +599,8 @@ export class WorkoutLogService {
 
   private normalizePlanDefinitions(definitions: WorkoutPlan[]): WorkoutPlan[] {
     return definitions.map((definition) => ({
-      ...definition,
-      trainingDays: this.workoutService.flattenPlan(definition),
+      ...normalizePersistedPlanDefinition(definition),
+      trainingDays: this.workoutService.flattenPlan(normalizePersistedPlanDefinition(definition)),
     }));
   }
 

@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ScheduleList } from './components/schedule-list/schedule-list';
+import { normalizePlanDraft } from './plan-node-id';
 
 @Component({
   selector: 'app-plan-create',
@@ -49,9 +50,12 @@ export class PlanCreateComponent {
     if (this.form.invalid) {
       return;
     }
-    // We cast to any because the form structure matches the new WorkoutPlan structure
-    // but TS might complain about optional fields or strict types
-    await this.workoutLogService.createPlan(this.form.value as unknown as Omit<WorkoutPlan, 'id'>);
+
+    const payload = normalizePlanDraft(
+      this.form.getRawValue() as unknown as Omit<WorkoutPlan, 'id'>,
+    );
+
+    await this.workoutLogService.createPlan(payload);
     await this.router.navigate(['/workout-log']);
   }
 

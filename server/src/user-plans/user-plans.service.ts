@@ -18,6 +18,7 @@ import {
 import { CommitUserPlanLogDto } from './dto/commit-user-plan-log.dto';
 import { CreateUserPlanDto } from './dto/create-user-plan.dto';
 import { GetUserPlansDto } from './dto/get-user-plans.dto';
+import { normalizeWorkoutPlanStructure } from '../workout-plans/workout-plan-normalizer';
 
 const userPlanWithLogs = {
   logs: {
@@ -640,13 +641,17 @@ export class UserPlansService {
   }
 
   private flattenWorkoutPlan(plan: PrismaWorkoutPlan): TrainingDay[] {
-    const schedule = this.readSchedule(plan.schedule);
+    const normalized = normalizeWorkoutPlanStructure(plan.id, {
+      schedule: this.readSchedule(plan.schedule),
+      trainingDays: this.readTrainingDays(plan.trainingDays),
+    });
+    const schedule = normalized.schedule;
 
     if (schedule && schedule.length > 0) {
       return this.flattenScheduleItems(schedule);
     }
 
-    return this.readTrainingDays(plan.trainingDays);
+    return normalized.trainingDays ?? [];
   }
 
   private flattenScheduleItems(items: ScheduleItem[]): TrainingDay[] {
