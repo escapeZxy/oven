@@ -4,6 +4,7 @@ import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } fr
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ScheduleItem } from '../schedule-item/schedule-item';
+import { createPlanNodeId } from '../../plan-node-id';
 
 @Component({
   selector: 'app-schedule-list',
@@ -23,6 +24,9 @@ import { ScheduleItem } from '../schedule-item/schedule-item';
         <div class="flex gap-2 justify-center py-4 border-2 border-dashed border-slate-200 rounded-xl hover:border-indigo-200 hover:bg-indigo-50/30 transition-all">
           <button mat-stroked-button color="primary" (click)="addDay()">
             <mat-icon>add</mat-icon> 添加训练日
+          </button>
+          <button mat-stroked-button (click)="addRestDay()">
+            <mat-icon>hotel</mat-icon> 添加休息日
           </button>
           <button mat-stroked-button color="accent" (click)="addCycle()">
             <mat-icon>repeat</mat-icon> 添加循环
@@ -45,15 +49,27 @@ export class ScheduleList {
   addDay(): void {
     if (this.readonly) return;
     this.formArray.push(this.fb.group({
+      id: [createPlanNodeId('day')],
       type: ['day'],
       name: ['训练日', Validators.required],
       exercises: this.fb.array([])
     }));
   }
 
+  addRestDay(): void {
+    if (this.readonly) return;
+    this.formArray.push(this.fb.group({
+      id: [createPlanNodeId('day')],
+      type: ['rest'],
+      name: ['休息日', Validators.required],
+      exercises: this.fb.array([]),
+    }));
+  }
+
   addCycle(): void {
     if (this.readonly) return;
     this.formArray.push(this.fb.group({
+      id: [createPlanNodeId('cycle')],
       type: ['cycle'],
       name: ['循环周期', Validators.required],
       repeats: [4, [Validators.required, Validators.min(1)]],

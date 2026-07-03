@@ -340,6 +340,74 @@ describe('UserPlansService auth-aware boundaries', () => {
     expect(result.status).toBe(UserWorkoutPlanStatus.active);
   });
 
+  it('allows completing a rest day without exercise payload', async () => {
+    const { prisma, transactionClient, service } = createService();
+
+    prisma.userWorkoutPlan.findFirst
+      .mockResolvedValueOnce({
+        id: 'up-rest',
+        userId: 'user-1',
+        workoutPlanId: 'plan-rest',
+        currentDayIndex: 0,
+        status: UserWorkoutPlanStatus.active,
+        isActive: true,
+        isArchived: false,
+      })
+      .mockResolvedValueOnce({
+        id: 'up-rest',
+        userId: 'user-1',
+        workoutPlanId: 'plan-rest',
+        startDate: new Date('2026-06-26T00:00:00.000Z'),
+        currentDayIndex: 1,
+        status: UserWorkoutPlanStatus.completed,
+        isArchived: false,
+        isActive: false,
+        logs: [
+          {
+            id: 'log-rest',
+            userId: 'user-1',
+            workoutPlanId: 'plan-rest',
+            trainingDayId: 'rest-1',
+            date: new Date('2026-06-26T08:00:00.000Z'),
+            status: WorkoutLogStatus.completed,
+            completedExercises: [],
+          },
+        ],
+      });
+    prisma.workoutPlan.findUnique.mockResolvedValue({
+      id: 'plan-rest',
+      schedule: [{ id: 'rest-1', type: 'rest', name: 'Rest Day', exercises: [] }],
+      trainingDays: null,
+    });
+
+    const result = await service.appendLog(
+      'up-rest',
+      {
+        clientRequestId: 'req-rest',
+        workoutPlanId: 'plan-rest',
+        trainingDayId: 'rest-1',
+        expectedCurrentDayIndex: 0,
+        nextDayIndex: 1,
+        userPlanStatus: UserWorkoutPlanStatus.completed,
+        isActive: false,
+        logStatus: WorkoutLogStatus.completed,
+        completedExercises: [],
+      },
+      'user-1',
+    );
+
+    expect(transactionClient.workoutLog.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          trainingDayId: 'rest-1',
+          status: WorkoutLogStatus.completed,
+          completedExercises: [],
+        }),
+      }),
+    );
+    expect(result.status).toBe(UserWorkoutPlanStatus.completed);
+  });
+
   it('returns the existing user plan when the same clientRequestId is replayed', async () => {
     const { prisma, service } = createService();
 

@@ -80,6 +80,7 @@ export class WorkoutSessionComponent {
   protected readonly conflictDraftUpdatedAt = signal<number | null>(null);
   protected readonly unavailableMessage = signal<string | null>(null);
   private readonly pendingCommit = signal<{ requestId: string; status: WorkoutLog['status'] } | null>(null);
+  protected readonly isRestDay = computed(() => this.todaysWorkout()?.dayType === 'rest');
   protected readonly syncStatus = computed(() => this.workoutLogService.syncStatus());
   protected readonly syncError = computed(() => this.workoutLogService.syncError());
   protected readonly lastSyncedAt = computed(() => this.workoutLogService.lastSyncedAt());
@@ -245,6 +246,10 @@ export class WorkoutSessionComponent {
   }
 
   protected canSubmitCompletedWorkout(): boolean {
+    if (this.isRestDay()) {
+      return true;
+    }
+
     if (this.form.invalid) {
       return false;
     }
@@ -332,7 +337,7 @@ export class WorkoutSessionComponent {
     this.conflictNotice.set(null);
 
     const completedExercises = status === 'completed' ? this.buildCompletedExercises() : [];
-    if (status === 'completed') {
+    if (status === 'completed' && !this.isRestDay()) {
       if (this.form.invalid) {
         return;
       }
@@ -390,6 +395,14 @@ export class WorkoutSessionComponent {
     }
 
     await this.submitSession('skipped');
+  }
+
+  protected getSessionSubtitle(): string {
+    return this.isRestDay() ? '今天按计划休息，确认后会推进到下一天。' : '保持专注，完成今日目标！';
+  }
+
+  protected getSubmitLabel(): string {
+    return this.isRestDay() ? '完成休息日' : '完成训练';
   }
 
   protected async refreshSessionState(): Promise<void> {

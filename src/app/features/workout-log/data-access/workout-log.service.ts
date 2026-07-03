@@ -39,6 +39,7 @@ export interface WorkoutPlanViewModel extends WorkoutPlan {
   startDate: string;
   currentDayIndex: number;
   currentTrainingDayId: string | null;
+  currentDayType?: 'day' | 'training' | 'rest';
   isActive: boolean;
   status?: 'active' | 'completed' | 'interrupted';
   isArchived?: boolean;
@@ -504,6 +505,7 @@ export class WorkoutLogService {
         planName: planDefinition.name,
         dayName: workoutDay.name,
         trainingDayId: workoutDay.id,
+        dayType: workoutDay.type,
         currentDayIndex: dayIndex,
         exercises: workoutDay.exercises,
       };

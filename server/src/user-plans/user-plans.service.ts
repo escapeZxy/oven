@@ -285,7 +285,7 @@ export class UserPlansService {
     }
 
     if (dto.logStatus === WorkoutLogStatus.completed) {
-      this.validateCompletedExercises(dto.completedExercises);
+      this.validateCompletedExercises(dto.completedExercises, commitBoundary.currentTrainingDay);
     }
 
     try {
@@ -585,7 +585,20 @@ export class UserPlansService {
     };
   }
 
-  private validateCompletedExercises(exercises: CompletedExerciseLog[]): void {
+  private validateCompletedExercises(
+    exercises: CompletedExerciseLog[],
+    trainingDay: TrainingDay,
+  ): void {
+    if (trainingDay.type === 'rest') {
+      if (exercises.length > 0) {
+        throw new BadRequestException(
+          `Rest day "${trainingDay.id}" must not include completed exercise payload.`,
+        );
+      }
+
+      return;
+    }
+
     if (exercises.length === 0) {
       throw new BadRequestException(
         'Completed workout logs must include at least one completed set.',

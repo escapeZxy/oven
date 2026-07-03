@@ -32,14 +32,19 @@ import { ScheduleList } from '../schedule-list/schedule-list';
         <div class="flex items-center gap-3 flex-1 w-full">
           <!-- Type Badge -->
           <div class="h-10 w-10 rounded-xl flex items-center justify-center font-bold text-sm"
-               [ngClass]="isCycle ? 'bg-purple-100 text-purple-600' : 'bg-indigo-100 text-indigo-600'">
-            <mat-icon class="!w-5 !h-5 !text-xl">{{ isCycle ? 'repeat' : 'event' }}</mat-icon>
+               [class.bg-purple-100]="isCycle"
+               [class.text-purple-600]="isCycle"
+               [class.bg-emerald-100]="isRestDay"
+               [class.text-emerald-600]="isRestDay"
+               [class.bg-indigo-100]="!isCycle && !isRestDay"
+               [class.text-indigo-600]="!isCycle && !isRestDay">
+            <mat-icon class="!w-5 !h-5 !text-xl">{{ itemIcon }}</mat-icon>
           </div>
 
           <!-- Name Input -->
           <mat-form-field appearance="outline" class="flex-1 !mb-[-1.25em]">
-            <mat-label>{{ isCycle ? '循环名称' : '训练日名称' }}</mat-label>
-            <input matInput formControlName="name" placeholder="例如：{{ isCycle ? '增肌期循环' : '胸部和三头肌' }}" [readonly]="readonly" />
+            <mat-label>{{ itemLabel }}</mat-label>
+            <input matInput formControlName="name" placeholder="例如：{{ itemPlaceholder }}" [readonly]="readonly" />
           </mat-form-field>
 
           <!-- Cycle Repeats Input -->
@@ -65,6 +70,10 @@ import { ScheduleList } from '../schedule-list/schedule-list';
           <!-- Recursive List for Cycle -->
           <div class="pl-4 border-l-2 border-purple-100">
             <app-schedule-list [formArray]="itemsArray" [readonly]="readonly"></app-schedule-list>
+          </div>
+        } @else if (isRestDay) {
+          <div class="rounded-2xl border border-emerald-100 bg-emerald-50/80 p-4 text-sm leading-6 text-emerald-800">
+            休息日不会配置训练动作。执行计划时，这一天会以“完成休息日”的方式推进到下一天。
           </div>
         } @else {
           <!-- Exercises List for Day -->
@@ -125,6 +134,46 @@ export class ScheduleItem {
 
   get isCycle() {
     return this.formGroup.get('type')?.value === 'cycle';
+  }
+
+  get isRestDay() {
+    return this.formGroup.get('type')?.value === 'rest';
+  }
+
+  get itemIcon(): string {
+    if (this.isCycle) {
+      return 'repeat';
+    }
+
+    if (this.isRestDay) {
+      return 'hotel';
+    }
+
+    return 'event';
+  }
+
+  get itemLabel(): string {
+    if (this.isCycle) {
+      return '循环名称';
+    }
+
+    if (this.isRestDay) {
+      return '休息日名称';
+    }
+
+    return '训练日名称';
+  }
+
+  get itemPlaceholder(): string {
+    if (this.isCycle) {
+      return '增肌期循环';
+    }
+
+    if (this.isRestDay) {
+      return '主动恢复日';
+    }
+
+    return '胸部和三头肌';
   }
 
   get itemsArray() {
