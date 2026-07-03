@@ -1,5 +1,5 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { Injectable, Signal, computed, effect, inject, signal } from '@angular/core';
+import { Injectable, Signal, computed, effect, inject, signal, untracked } from '@angular/core';
 import {
   CompletedExerciseLog,
   ExerciseTrendSummary,
@@ -93,6 +93,7 @@ export class WorkoutLogService {
   private readonly _syncError = signal<string | null>(null);
   private readonly _planDefinitionsCursor = signal<string | null>(null);
   private readonly _userPlansCursor = signal<string | null>(null);
+  private lastAuthenticatedUserId: string | null = null;
   public readonly availablePlans = signal<WorkoutPlan[]>([]);
   public readonly weeklyVolume = computed(() => this._weeklyVolume());
   public readonly monthlyVolume = computed(() => this._monthlyVolume());
@@ -183,8 +184,28 @@ export class WorkoutLogService {
     effect(() => {
       const user = this.currentUser();
       if (user) {
-        void this.refreshDashboardData();
+        const isUserChanged = this.lastAuthenticatedUserId !== user.id;
+        if (isUserChanged) {
+          this.lastAuthenticatedUserId = user.id;
+          this._userPlans.set([]);
+          this._weeklyVolume.set(null);
+          this._monthlyVolume.set(null);
+          this._planCompletionSummary.set(null);
+          this._exerciseTrendSummary.set(null);
+          this._lastSyncedAt.set(null);
+          this._syncError.set(null);
+          this._planDefinitionsCursor.set(null);
+          this._userPlansCursor.set(null);
+          this.availablePlans.set([]);
+        }
+
+        untracked(() => {
+          void this.refreshDashboardData({
+            forceFullSync: isUserChanged,
+          });
+        });
       } else {
+        this.lastAuthenticatedUserId = null;
         this._userPlans.set([]);
         this._weeklyVolume.set(null);
         this._monthlyVolume.set(null);
