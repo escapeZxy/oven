@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
-import path from 'node:path';
+import * as path from 'node:path';
 import { createClient } from '@libsql/client';
 
 const MIGRATIONS_TABLE = '_oven_migrations';
