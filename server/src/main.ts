@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { runLibsqlMigrations } from './prisma/libsql-migration';
 import { PrismaService } from './prisma/prisma.service';
 
 function resolveCorsOrigin(): string[] | boolean {
@@ -13,6 +14,7 @@ function resolveCorsOrigin(): string[] | boolean {
 }
 
 async function bootstrap() {
+  await runLibsqlMigrations();
   const app = await NestFactory.create(AppModule);
   const port = Number(process.env['PORT'] ?? 3000);
 
