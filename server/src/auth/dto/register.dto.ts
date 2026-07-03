@@ -17,7 +17,7 @@ export class RegisterDto {
   @IsString()
   @MinLength(3)
   @MaxLength(64)
-  @Matches(/^[a-z0-9](?:[a-z0-9-_]{1,62}[a-z0-9])?$/)
+  @Matches(/^[A-Za-z0-9](?:[A-Za-z0-9_-]{1,62}[A-Za-z0-9])?$/)
   public username!: string;
 
   @IsEmail()
@@ -33,5 +33,6 @@ export class RegisterDto {
   @IsString()
   @MinLength(1)
   @MaxLength(64)
+  @Matches(/^(?!.*[\r\n\t]).+$/u)
   public displayName?: string;
 }

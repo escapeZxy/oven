@@ -66,15 +66,16 @@
         <mat-form-field appearance="outline">
           <mat-label>用户名</mat-label>
           <input matInput type="text" formControlName="username" autocomplete="username" />
-          <mat-hint>只允许字母、数字、下划线和短横线。</mat-hint>
+          <mat-hint>支持字母、数字、下划线和短横线；保存时会统一转成小写。</mat-hint>
           @if (registerForm.controls.username.touched && registerForm.controls.username.invalid) {
-            <mat-error>用户名至少 3 位，且不能包含空格。</mat-error>
+            <mat-error>用户名需为 3-64 位，只能包含字母、数字、下划线和短横线，且不能以符号开头或结尾。</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>显示名</mat-label>
           <input matInput type="text" formControlName="displayName" autocomplete="nickname" />
+          <mat-hint>显示名支持中文，最长 64 个字符。</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline">

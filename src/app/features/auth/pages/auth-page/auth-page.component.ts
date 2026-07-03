@@ -30,6 +30,7 @@ type AuthMode = 'login' | 'register';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuthPageComponent {
+  private static readonly usernamePattern = /^[A-Za-z0-9](?:[A-Za-z0-9_-]{1,62}[A-Za-z0-9])?$/;
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
@@ -53,9 +54,14 @@ export class AuthPageComponent {
     email: ['', [Validators.required, Validators.email]],
     username: [
       '',
-      [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-Z0-9_-]+$/)],
+      [
+        Validators.required,
+        Validators.minLength(3),
+        Validators.maxLength(64),
+        Validators.pattern(AuthPageComponent.usernamePattern),
+      ],
     ],
-    displayName: ['', [Validators.maxLength(48)]],
+    displayName: ['', [Validators.maxLength(64)]],
     password: ['', [Validators.required, Validators.minLength(8)]],
   });
 

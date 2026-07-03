@@ -95,6 +95,36 @@ describe('AuthService', () => {
     expect(prisma.authSession.create).toHaveBeenCalled();
   });
 
+  it('preserves a chinese display name during registration', async () => {
+    const { prisma, service } = createService();
+
+    prisma.user.findFirst.mockResolvedValue(null);
+    prisma.user.create.mockResolvedValue({
+      id: 'user-3',
+      username: 'mixed_name',
+      email: 'mixed@example.com',
+      displayName: '张三',
+      createdAt: new Date('2026-06-27T00:00:00.000Z'),
+    });
+
+    const result = await service.register({
+      email: 'mixed@example.com',
+      username: 'Mixed_Name',
+      displayName: ' 张三 ',
+      password: 'password-123',
+    });
+
+    expect(prisma.user.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          username: 'mixed_name',
+          displayName: '张三',
+        }),
+      }),
+    );
+    expect(result.user.displayName).toBe('张三');
+  });
+
   it('rejects duplicate email or username during registration', async () => {
     const { prisma, service } = createService();
 
