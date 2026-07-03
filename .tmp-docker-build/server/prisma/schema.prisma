@@ -1,0 +1,92 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum UserWorkoutPlanStatus {
+  active
+  completed
+  interrupted
+}
+
+enum WorkoutLogStatus {
+  completed
+  skipped
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  username     String        @unique
+  displayName  String
+  passwordHash String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  lastLoginAt  DateTime?
+  sessions     AuthSession[]
+
+  @@index([createdAt])
+}
+
+model AuthSession {
+  id         String   @id @default(cuid())
+  userId     String
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  lastSeenAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
+
+model UserWorkoutPlan {
+  id              String                @id @default(cuid())
+  userId          String
+  workoutPlanId   String
+  startDate       DateTime
+  currentDayIndex Int                   @default(0)
+  status          UserWorkoutPlanStatus @default(active)
+  isArchived      Boolean               @default(false)
+  isActive        Boolean               @default(true)
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  logs            WorkoutLog[]
+
+  @@index([userId, isActive])
+  @@index([userId, status])
+}
+
+model WorkoutPlan {
+  id           String   @id @default(cuid())
+  name         String
+  description  String
+  schedule     Json?
+  trainingDays Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model WorkoutLog {
+  id                 String           @id @default(cuid())
+  clientRequestId    String?          @unique
+  userPlanId         String
+  userId             String
+  workoutPlanId      String
+  trainingDayId      String
+  date               DateTime
+  status             WorkoutLogStatus
+  completedExercises Json
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  userPlan           UserWorkoutPlan  @relation(fields: [userPlanId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@index([userPlanId, date])
+}

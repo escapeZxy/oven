@@ -1,0 +1,46 @@
+import { Follow, Post, Comment, Like, Notification } from '../models';
+export declare class SocialRepository {
+    private follows;
+    private posts;
+    private comments;
+    private likes;
+    private notifications;
+    createFollow(followData: Omit<Follow, 'id' | 'createdAt'>): Promise<Follow>;
+    findFollowById(id: string): Promise<Follow | null>;
+    findFollowByFollowerAndFollowing(followerId: string, followingId: string): Promise<Follow | null>;
+    findFollowersByUserId(userId: string): Promise<Follow[]>;
+    findFollowingByUserId(userId: string): Promise<Follow[]>;
+    deleteFollow(id: string): Promise<boolean>;
+    deleteFollowByFollowerAndFollowing(followerId: string, followingId: string): Promise<boolean>;
+    createPost(postData: Omit<Post, 'id' | 'likes' | 'comments' | 'createdAt' | 'updatedAt'>): Promise<Post>;
+    findPostById(id: string): Promise<Post | null>;
+    findPostsByUserId(userId: string): Promise<Post[]>;
+    findPostsByFollowing(userId: string): Promise<Post[]>;
+    updatePost(post: Post): Promise<Post | null>;
+    incrementPostLikes(postId: string): Promise<Post | null>;
+    decrementPostLikes(postId: string): Promise<Post | null>;
+    incrementPostComments(postId: string): Promise<Post | null>;
+    decrementPostComments(postId: string): Promise<Post | null>;
+    deletePost(id: string): Promise<boolean>;
+    createComment(commentData: Omit<Comment, 'id' | 'createdAt' | 'updatedAt'>): Promise<Comment>;
+    findCommentById(id: string): Promise<Comment | null>;
+    findCommentsByPostId(postId: string): Promise<Comment[]>;
+    updateComment(comment: Comment): Promise<Comment | null>;
+    deleteComment(id: string): Promise<boolean>;
+    createLike(likeData: Omit<Like, 'id' | 'createdAt'>): Promise<Like>;
+    findLikeById(id: string): Promise<Like | null>;
+    findLikeByPostAndUser(postId: string, userId: string): Promise<Like | null>;
+    findLikesByPostId(postId: string): Promise<Like[]>;
+    findLikesByUserId(userId: string): Promise<Like[]>;
+    deleteLike(id: string): Promise<boolean>;
+    deleteLikeByPostAndUser(postId: string, userId: string): Promise<boolean>;
+    createNotification(notificationData: Omit<Notification, 'id' | 'isRead' | 'createdAt'>): Promise<Notification>;
+    findNotificationById(id: string): Promise<Notification | null>;
+    findNotificationsByUserId(userId: string): Promise<Notification[]>;
+    findUnreadNotificationsByUserId(userId: string): Promise<Notification[]>;
+    markNotificationAsRead(id: string): Promise<Notification | null>;
+    markAllNotificationsAsRead(userId: string): Promise<void>;
+    deleteNotification(id: string): Promise<boolean>;
+    deleteAllNotificationsByUserId(userId: string): Promise<void>;
+}
+//# sourceMappingURL=social.repository.d.ts.map

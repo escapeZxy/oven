@@ -1,0 +1,36 @@
+import { Follow, Post, Comment, Like, Notification } from '../models';
+import { SocialRepository } from '../repositories/social.repository';
+export declare class SocialService {
+    private socialRepository;
+    constructor(socialRepository: SocialRepository);
+    followUser(followerId: string, followingId: string): Promise<Follow | null>;
+    unfollowUser(followerId: string, followingId: string): Promise<boolean>;
+    isFollowing(followerId: string, followingId: string): Promise<boolean>;
+    getFollowers(userId: string): Promise<Follow[]>;
+    getFollowing(userId: string): Promise<Follow[]>;
+    createPost(postData: Omit<Post, 'id' | 'likes' | 'comments' | 'createdAt' | 'updatedAt'>): Promise<Post>;
+    getPost(id: string): Promise<Post | null>;
+    getPostsByUserId(userId: string): Promise<Post[]>;
+    getFeed(userId: string): Promise<Post[]>;
+    updatePost(post: Post): Promise<Post | null>;
+    deletePost(id: string): Promise<boolean>;
+    addComment(commentData: Omit<Comment, 'id' | 'createdAt' | 'updatedAt'>): Promise<Comment>;
+    getComment(id: string): Promise<Comment | null>;
+    getCommentsByPostId(postId: string): Promise<Comment[]>;
+    updateComment(comment: Comment): Promise<Comment | null>;
+    deleteComment(id: string): Promise<boolean>;
+    likePost(postId: string, userId: string): Promise<Like | null>;
+    unlikePost(postId: string, userId: string): Promise<boolean>;
+    isPostLiked(postId: string, userId: string): Promise<boolean>;
+    getLikesByPostId(postId: string): Promise<Like[]>;
+    createNotification(notificationData: Omit<Notification, 'id' | 'isRead' | 'createdAt'>): Promise<Notification>;
+    getNotifications(userId: string): Promise<Notification[]>;
+    getUnreadNotifications(userId: string): Promise<Notification[]>;
+    markNotificationAsRead(id: string): Promise<Notification | null>;
+    markAllNotificationsAsRead(userId: string): Promise<void>;
+    deleteNotification(id: string): Promise<boolean>;
+    clearAllNotifications(userId: string): Promise<void>;
+    getUserActivityFeed(userId: string, limit?: number): Promise<Post[]>;
+    getPopularPosts(limit?: number): Promise<Post[]>;
+    private getAllPosts;
+}
