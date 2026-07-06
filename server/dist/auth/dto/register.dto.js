@@ -18,7 +18,7 @@ __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MinLength)(3),
     (0, class_validator_1.MaxLength)(64),
-    (0, class_validator_1.Matches)(/^[a-z0-9](?:[a-z0-9-_]{1,62}[a-z0-9])?$/),
+    (0, class_validator_1.Matches)(/^[A-Za-z0-9](?:[A-Za-z0-9_-]{1,62}[A-Za-z0-9])?$/),
     __metadata("design:type", String)
 ], RegisterDto.prototype, "username", void 0);
 __decorate([
@@ -37,6 +37,7 @@ __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.MinLength)(1),
     (0, class_validator_1.MaxLength)(64),
+    (0, class_validator_1.Matches)(/^(?!.*[\r\n\t]).+$/u),
     __metadata("design:type", String)
 ], RegisterDto.prototype, "displayName", void 0);
 //# sourceMappingURL=register.dto.js.map

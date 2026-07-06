@@ -48,7 +48,7 @@ let AuthService = class AuthService {
                 username,
                 email,
                 passwordHash: await this.passwordHasher.hash(dto.password),
-                displayName: this.normalizeDisplayName(dto.displayName, dto.username),
+                displayName: this.normalizeDisplayName(dto.displayName, username),
             },
             select: userProfileSelect,
         });

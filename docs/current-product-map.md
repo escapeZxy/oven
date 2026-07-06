@@ -36,9 +36,12 @@
 
 - Web
 
+当前已经具备：
+
+- 正式生产 Web 部署
+
 当前还不具备：
 
-- 正式生产部署方案
 - 最小 PWA 安装壳
 - iOS 原生壳
 - Android 原生壳
@@ -65,6 +68,7 @@
 
 - NestJS 服务可稳定启动
 - Prisma + SQLite 已接入正式数据层
+- 生产数据库已切到 Turso
 - `User`、`WorkoutPlan`、`UserWorkoutPlan`、`WorkoutLog` 已正式持久化
 - 已提供注册、登录、会话恢复、注销、JWT 鉴权和 `GET /auth/me`
 - 当前已提供首批正式业务接口
@@ -96,6 +100,14 @@
 - `POST /user-plans/:id/logs` 现在支持可选 `clientRequestId`，用于重复提交幂等保护
 - `POST /workout-logs` 当前保留为控制边界的拒绝入口，不再用于正式写入
 - `user-plans` 与 `workout-logs` 现在要求 Bearer Token，并从身份上下文解析用户
+- 正式后端地址：`https://oven-production.up.railway.app`
+
+### 前端现状
+
+- 正式前端地址：`https://oven-two.vercel.app`
+- 前端当前托管在 Vercel
+- 平板浏览器访问已验证通过
+- iPhone Safari 与 Android Chrome 暂未完成真机验证
 
 ## 当前已实现的核心场景
 
@@ -117,6 +129,19 @@
 - 活跃计划 / 历史计划：`GET /user-plans?updatedAfter=...&limit=...`
 - 周容量 / 月容量统计：`GET /workout-logs/volume`
 - 正式数据同步游标：`GET /workout-plans` / `GET /user-plans`
+
+当前正式环境已验证：
+
+- 注册通过
+- 登录通过
+- 会话恢复通过
+- 创建计划通过
+- 开始计划通过
+- 完成训练通过
+- 跳过训练通过
+- 同步通过
+- 历史记录通过
+- 统计通过
 
 ### 2. 创建新训练计划
 
@@ -337,12 +362,11 @@
 
 最终目标虽然是 `Web + iOS + Android`，但当前还没有：
 
-- 生产 Web 发布配置收口
 - PWA manifest / service worker
 - iPhone 和 Android 的安装壳
 - 商店图标、启动图、签名和提审材料
 
-这意味着当前项目还不能被准确称为“已具备跨端发布能力”。
+这意味着当前项目已经具备正式 Web 发布能力，但还不能被准确称为“已具备完整跨端发布能力”。
 
 ## 当前前后端职责边界
 
@@ -380,11 +404,12 @@
 
 如果继续沿着现有主线做，推荐顺序如下：
 
-1. 先完成生产 Web 发布基础和移动端 Web 适配
+1. 先补移动端 Web 适配
 2. 再补最小 PWA
 3. 再补完整多设备同步
-4. 最后进入 iOS / Android 原生壳与商店发布
-5. 再补更深层训练分析
+4. 再完成手机真机验证
+5. 最后进入 iOS / Android 原生壳与商店发布
+6. 再补更深层训练分析
 
 原因很简单：
 
@@ -400,5 +425,5 @@
 
 现在它最需要的不是“继续堆功能”，而是：
 
-- 先把 Web 发布和移动端交付基础做实
+- 正式 Web 已经上线，接下来先把移动端交付基础做实
 - 再在稳定正式数据之上补完整同步和更深层分析

@@ -37,7 +37,11 @@
 - 已新增基础冲突恢复：提交冲突后自动同步最新正式数据并保留本地草稿
 - 已新增冲突分类语义：服务端按冲突类型返回 `code + recoveryAction`
 - 最终目标已经明确为 `Web + iOS + Android` 三端统一交付
-- 当前仍然只具备 Web 应用基础，还没有正式发布基础、PWA 壳和原生商店壳
+- 生产 Web 发布基础已完成
+- 当前正式部署组合为 `Vercel + Railway + Turso`
+- 当前正式前端地址为 `https://oven-two.vercel.app`
+- 当前正式后端地址为 `https://oven-production.up.railway.app`
+- 当前仍没有 PWA 壳和原生商店壳
 
 ## 项目文档
 
@@ -63,8 +67,8 @@
 
 当前真实状态：
 
-- 已具备 Web 主流程
-- 还没有 production 发布基础
+- 已具备 Web 主流程并已正式上线
+- 生产 Web 发布基础已完成
 - 还没有 PWA manifest / service worker
 - 还没有 iOS / Android 原生壳
 
@@ -119,6 +123,46 @@ src/environments/environment.development.ts
 ```text
 http://localhost:3000
 ```
+
+## 线上地址
+
+前端正式地址：
+
+```text
+https://oven-two.vercel.app
+```
+
+后端正式地址：
+
+```text
+https://oven-production.up.railway.app
+```
+
+部署组合：
+
+- 前端：Vercel
+- 后端：Railway
+- 数据库：Turso
+- CORS：`https://oven-two.vercel.app`
+
+当前正式环境已验证通过：
+
+- 注册
+- 登录
+- 会话恢复
+- 创建计划
+- 开始计划
+- 完成训练
+- 跳过训练
+- 同步
+- 历史记录
+- 统计
+
+当前终端验证情况：
+
+- 平板：通过
+- iPhone Safari：暂未验证
+- Android Chrome：暂未验证
 
 ## 当前后端接口
 

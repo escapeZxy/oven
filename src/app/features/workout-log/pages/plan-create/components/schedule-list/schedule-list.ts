@@ -21,14 +21,14 @@ import { createPlanNodeId } from '../../plan-node-id';
       }
       
       @if (!readonly) {
-        <div class="flex gap-2 justify-center py-4 border-2 border-dashed border-slate-200 rounded-xl hover:border-indigo-200 hover:bg-indigo-50/30 transition-all">
-          <button mat-stroked-button color="primary" (click)="addDay()">
+        <div class="flex flex-col gap-2 justify-center rounded-xl border-2 border-dashed border-slate-200 py-4 transition-all hover:border-indigo-200 hover:bg-indigo-50/30 sm:flex-row">
+          <button mat-stroked-button color="primary" class="w-full sm:w-auto" (click)="addDay()">
             <mat-icon>add</mat-icon> 添加训练日
           </button>
-          <button mat-stroked-button (click)="addRestDay()">
+          <button mat-stroked-button class="w-full sm:w-auto" (click)="addRestDay()">
             <mat-icon>hotel</mat-icon> 添加休息日
           </button>
-          <button mat-stroked-button color="accent" (click)="addCycle()">
+          <button mat-stroked-button color="accent" class="w-full sm:w-auto" (click)="addCycle()">
             <mat-icon>repeat</mat-icon> 添加循环
           </button>
         </div>

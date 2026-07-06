@@ -29,18 +29,18 @@
 - 后端 Docker 部署骨架
 - 前后端上线实施清单
 
-当前项目仍然还不具备：
+当前阶段已经完成的真实发布结果：
 
-- 真实云数据库
-- 真实前端正式域名
-- 真实后端正式域名
-- 真实生产密钥与平台账号
+- 前端正式地址：`https://oven-two.vercel.app`
+- 后端正式地址：`https://oven-production.up.railway.app`
+- 数据库方案：Turso
+- 部署组合：
+  - 前端：Vercel
+  - 后端：Railway
+  - 数据库：Turso
+- CORS 已收口到：`https://oven-two.vercel.app`
 
-所以这份文档的目标很明确：
-
-- 先把 Web 发布做实
-- 让手机、平板、桌面浏览器都能访问
-- 为后续 PWA 和原生壳打底
+当前这份文档的角色已经从“待执行清单”变成“已落地的 Web 发布记录 + 后续复用手册”。
 
 ## 推荐部署组合
 
@@ -68,15 +68,31 @@
 - [x] 新增 `.dockerignore`
 - [x] 新增前端 `vercel.json`
 
-## 现在需要你手动完成的步骤
+## 当前已完成的发布事实
 
-这些步骤涉及你的平台账号、密钥和正式域名，我不能替你完成：
+当前生产 Web 发布基础已完成，并已验证通过以下主流程：
 
-1. 创建 Turso 正式数据库
-2. 准备后端部署平台账号
-3. 准备前端部署平台账号
-4. 准备正式域名
-5. 生成正式 `JWT_SECRET`
+- 注册
+- 登录
+- 会话恢复
+- 创建计划
+- 开始计划
+- 完成训练
+- 跳过训练
+- 正式数据同步
+- 历史记录
+- 统计
+
+当前真机验证状态：
+
+- 平板：已通过
+- iPhone Safari：暂未验证
+- Android Chrome：暂未验证
+
+当前已知剩余问题：
+
+- 暂无明确阻塞问题
+- 下一阶段重点已经转向移动端 Web 适配与最小 PWA
 
 ## 实施步骤
 
@@ -119,14 +135,9 @@ https://api.oven.example.com
 3. 生成数据库认证令牌
 4. 把连接串填进后端 `DATABASE_URL`
 5. 把认证令牌填进后端 `TURSO_AUTH_TOKEN`
-6. 在部署后端前执行数据库迁移
+6. 在部署后端前完成数据库初始化
 
-建议命令：
-
-```bash
-cd server
-npx prisma migrate deploy
-```
+当前项目的生产环境已经切到 Turso，并通过应用启动时的 libsql migration runner 执行迁移，不再依赖生产环境直接执行 `prisma migrate deploy`。
 
 ## 第 3 步：部署后端
 
@@ -162,6 +173,12 @@ npx prisma migrate deploy
 https://api.your-domain.com/health
 ```
 
+当前正式后端地址：
+
+```text
+https://oven-production.up.railway.app
+```
+
 ## 第 4 步：部署前端
 
 当前仓库已经准备了：
@@ -189,6 +206,12 @@ dist/oven/browser
    - 刷新后会话可恢复
    - 仪表盘数据正常
 
+当前正式前端地址：
+
+```text
+https://oven-two.vercel.app
+```
+
 ## 第 5 步：收口正式域名与 CORS
 
 当前后端会从 `CORS_ORIGIN` 读取允许域名。
@@ -200,6 +223,12 @@ CORS_ORIGIN="https://oven-web.vercel.app,https://oven.example.com"
 ```
 
 不要继续保留全开 CORS。
+
+当前已生效配置：
+
+```env
+CORS_ORIGIN="https://oven-two.vercel.app"
+```
 
 ## 第 6 步：真机验证
 
@@ -214,6 +243,21 @@ CORS_ORIGIN="https://oven-web.vercel.app,https://oven.example.com"
 7. 提交完成训练
 8. 仪表盘同步状态正常
 
+当前已完成验证：
+
+- 平板浏览器访问通过
+- 注册 / 登录通过
+- 创建计划通过
+- 开始计划通过
+- 提交完成训练通过
+- 跳过训练通过
+- 仪表盘同步状态通过
+
+当前暂未完成：
+
+- iPhone Safari 真机验证
+- Android Chrome 真机验证
+
 ## 验收标准
 
 只要下面这些成立，就说明“生产 Web 发布基础”已经完成：
@@ -221,8 +265,10 @@ CORS_ORIGIN="https://oven-web.vercel.app,https://oven.example.com"
 - 前端与后端都跑在正式域名上
 - 前端不再请求 localhost
 - 数据库已经在云端
-- 手机、平板、桌面浏览器都能访问
+- 至少桌面与平板主流程已验证通过
 - 关键主流程可以走通
+
+当前项目已经满足以上标准，因此“生产 Web 发布基础”状态应判定为：已完成
 
 ## 当前阶段明确不做的事
 
@@ -263,4 +309,4 @@ CORS_ORIGIN="https://oven-web.vercel.app,https://oven.example.com"
 
 ## 一句话总结
 
-`当前这一步不是把 oven 直接送进商店，而是先把它变成一个真正可上线、可访问、可维护的 Web 产品。`
+`oven` 已经完成生产 Web 发布基础，当前下一步不是重复部署，而是补移动端 Web 适配和最小 PWA。`

@@ -10,16 +10,16 @@ import { ExerciseTrendView, WorkoutStatisticsService } from '../../services/work
     @if (items().length > 0) {
       <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
         @for (item of items(); track item.exerciseId) {
-          <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div class="flex items-start justify-between gap-4">
-              <div class="space-y-1">
-                <p class="text-lg font-bold text-slate-900">{{ item.exerciseName }}</p>
+          <article class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div class="min-w-0 space-y-1">
+                <p class="break-words text-base font-bold text-slate-900 sm:text-lg">{{ item.exerciseName }}</p>
                 <p class="text-xs text-slate-500">
                   最近 {{ item.sessionCount }} 次正式记录，最新训练 {{ item.latestLogAt | date:'shortDate' }}
                 </p>
               </div>
               <div
-                class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold"
+                class="inline-flex w-fit items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold"
                 [class.bg-emerald-50]="item.direction === 'up'"
                 [class.text-emerald-700]="item.direction === 'up'"
                 [class.bg-rose-50]="item.direction === 'down'"
@@ -34,11 +34,11 @@ import { ExerciseTrendView, WorkoutStatisticsService } from '../../services/work
             <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div class="rounded-2xl bg-slate-50 px-4 py-3">
                 <p class="text-xs font-medium text-slate-500">最新容量</p>
-                <p class="mt-1 text-2xl font-bold text-slate-900">{{ item.latestVolume | number:'1.0-0' }} kg</p>
+                <p class="mt-1 break-words text-xl font-bold text-slate-900 sm:text-2xl">{{ item.latestVolume | number:'1.0-0' }} kg</p>
               </div>
               <div class="rounded-2xl bg-slate-50 px-4 py-3">
                 <p class="text-xs font-medium text-slate-500">上次容量</p>
-                <p class="mt-1 text-2xl font-bold text-slate-900">
+                <p class="mt-1 break-words text-xl font-bold text-slate-900 sm:text-2xl">
                   @if (item.previousVolume !== null) {
                     {{ item.previousVolume | number:'1.0-0' }} kg
                   } @else {
@@ -48,7 +48,7 @@ import { ExerciseTrendView, WorkoutStatisticsService } from '../../services/work
               </div>
               <div class="rounded-2xl bg-slate-50 px-4 py-3">
                 <p class="text-xs font-medium text-slate-500">变化</p>
-                <p class="mt-1 text-2xl font-bold"
+                <p class="mt-1 break-words text-xl font-bold sm:text-2xl"
                   [class.text-emerald-700]="item.changeVolume !== null && item.changeVolume > 0"
                   [class.text-rose-700]="item.changeVolume !== null && item.changeVolume < 0"
                   [class.text-slate-900]="item.changeVolume === null || item.changeVolume === 0">
@@ -57,8 +57,8 @@ import { ExerciseTrendView, WorkoutStatisticsService } from '../../services/work
               </div>
             </div>
 
-            <div class="mt-5 space-y-2">
-              <div class="flex items-end justify-between gap-2 border-b border-slate-200 pb-2">
+            <div class="mt-5 space-y-2 overflow-x-auto pb-1">
+              <div class="flex min-w-[18rem] items-end justify-between gap-2 border-b border-slate-200 pb-2">
                 @for (point of item.points; track point.label) {
                   <div class="flex flex-1 flex-col items-center gap-2">
                     <div class="flex h-20 w-full items-end justify-center">

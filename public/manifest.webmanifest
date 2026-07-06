@@ -1,0 +1,30 @@
+{
+  "name": "Oven",
+  "short_name": "Oven",
+  "description": "Track workout plans, complete sessions, and review progress across your devices.",
+  "theme_color": "#4f46e5",
+  "background_color": "#f8fafc",
+  "display": "standalone",
+  "orientation": "portrait",
+  "start_url": "/workout-log",
+  "scope": "/",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

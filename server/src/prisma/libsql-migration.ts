@@ -11,6 +11,54 @@ type MigrationFile = {
   sql: string;
 };
 
+async function tableExists(
+  client: ReturnType<typeof createClient>,
+  tableName: string,
+): Promise<boolean> {
+  const result = await client.execute({
+    sql: "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ? LIMIT 1",
+    args: [tableName],
+  });
+
+  return result.rows.length > 0;
+}
+
+async function bootstrapFromPrismaMigrations(
+  client: ReturnType<typeof createClient>,
+  migrations: MigrationFile[],
+): Promise<void> {
+  const hasPrismaMigrationsTable = await tableExists(client, '_prisma_migrations');
+  if (!hasPrismaMigrationsTable) {
+    return;
+  }
+
+  const prismaMigrationsResult = await client.execute(`
+    SELECT migration_name
+    FROM _prisma_migrations
+    WHERE finished_at IS NOT NULL
+      AND rolled_back_at IS NULL
+  `);
+  const prismaAppliedNames = new Set(
+    prismaMigrationsResult.rows.map((row) => String(row['migration_name'])),
+  );
+  const bootstrappedMigrations = migrations.filter((migration) => prismaAppliedNames.has(migration.id));
+
+  for (const migration of bootstrappedMigrations) {
+    await client.execute({
+      sql: `INSERT OR IGNORE INTO ${MIGRATIONS_TABLE} (id, checksum) VALUES (?, ?)`,
+      args: [migration.id, migration.checksum],
+    });
+  }
+
+  if (bootstrappedMigrations.length > 0) {
+    console.log(
+      `Bootstrapped libsql migrations from Prisma history: ${bootstrappedMigrations
+        .map((migration) => migration.id)
+        .join(', ')}`,
+    );
+  }
+}
+
 function resolveDatabaseConfig(): { url: string; authToken?: string } {
   const url = process.env['DATABASE_URL'];
   const authToken = process.env['TURSO_AUTH_TOKEN']?.trim() || undefined;
@@ -50,6 +98,8 @@ export async function runLibsqlMigrations(): Promise<void> {
   const client = createClient(resolveDatabaseConfig());
 
   try {
+    const migrations = await readMigrationFiles();
+
     await client.executeMultiple(`
       CREATE TABLE IF NOT EXISTS ${MIGRATIONS_TABLE} (
         id TEXT NOT NULL PRIMARY KEY,
@@ -58,12 +108,16 @@ export async function runLibsqlMigrations(): Promise<void> {
       );
     `);
 
-    const appliedResult = await client.execute(`SELECT id, checksum FROM ${MIGRATIONS_TABLE}`);
+    let appliedResult = await client.execute(`SELECT id, checksum FROM ${MIGRATIONS_TABLE}`);
+    if (appliedResult.rows.length === 0) {
+      await bootstrapFromPrismaMigrations(client, migrations);
+      appliedResult = await client.execute(`SELECT id, checksum FROM ${MIGRATIONS_TABLE}`);
+    }
     const appliedMigrations = new Map(
       appliedResult.rows.map((row) => [String(row['id']), String(row['checksum'])]),
     );
 
-    for (const migration of await readMigrationFiles()) {
+    for (const migration of migrations) {
       const appliedChecksum = appliedMigrations.get(migration.id);
 
       if (appliedChecksum === migration.checksum) {

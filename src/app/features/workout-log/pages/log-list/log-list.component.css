@@ -1,3 +1,24 @@
 :host {
   display: block;
 }
+
+:host ::ng-deep .mobile-tab-group .mat-mdc-tab-header {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+:host ::ng-deep .mobile-tab-group .mat-mdc-tab-header::-webkit-scrollbar {
+  display: none;
+}
+
+:host ::ng-deep .mobile-tab-group .mat-mdc-tab-label-container {
+  min-width: max-content;
+}
+
+:host ::ng-deep .mobile-tab-group .mdc-tab {
+  min-width: fit-content;
+}
+
+:host ::ng-deep .mobile-chip-list .mdc-evolution-chip-set__chips {
+  flex-wrap: nowrap;
+}

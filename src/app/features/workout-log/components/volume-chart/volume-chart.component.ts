@@ -7,16 +7,16 @@ import { ChartData } from '../../services/workout-statistics.service';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-      <h3 class="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+    <div class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
+      <h3 class="mb-4 flex items-center gap-2 text-base font-bold text-slate-900 sm:mb-6 sm:text-lg">
         <span class="w-1 h-6 bg-indigo-500 rounded-full block"></span>
         {{ title() }}
       </h3>
       
       @if (data().length > 0) {
-        <div class="space-y-2">
+        <div class="space-y-2 overflow-x-auto pb-1">
           <!-- Chart Area -->
-          <div class="relative h-48 flex items-end justify-between gap-2 pb-px border-b border-slate-200">
+          <div class="relative flex h-44 min-w-[20rem] items-end justify-between gap-2 border-b border-slate-200 pb-px sm:h-48">
             <!-- Grid Lines -->
             <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
               <div class="border-t border-dashed border-slate-100 w-full h-0"></div>
@@ -27,17 +27,17 @@ import { ChartData } from '../../services/workout-statistics.service';
 
             <!-- Bars -->
             @for (item of data(); track item.label) {
-              <div class="relative flex-1 h-full flex items-end justify-center group z-10">
+              <div class="group relative z-10 flex h-full flex-1 items-end justify-center">
                 
                 <!-- Tooltip -->
-                <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-xs font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-lg translate-y-2 group-hover:translate-y-0">
+                <div class="pointer-events-none absolute -top-10 left-1/2 hidden -translate-x-1/2 translate-y-2 whitespace-nowrap rounded bg-slate-800 px-2 py-1 text-xs font-bold text-white opacity-0 shadow-lg transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 sm:block">
                   {{ item.value | number:'1.0-0' }} kg
                   <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-slate-800"></div>
                 </div>
 
                 <!-- Bar -->
                 <div 
-                  class="w-full max-w-[24px] bg-indigo-100 rounded-t-sm transition-all duration-500 ease-out group-hover:bg-indigo-500 relative overflow-hidden"
+                  class="relative w-full max-w-[22px] overflow-hidden rounded-t-sm bg-indigo-100 transition-all duration-500 ease-out group-hover:bg-indigo-500 sm:max-w-[24px]"
                   [style.height.%]="getPercentage(item.value)"
                 >
                   <!-- Inner Bar for animation/gradient effect -->
@@ -48,7 +48,7 @@ import { ChartData } from '../../services/workout-statistics.service';
           </div>
 
           <!-- Labels -->
-          <div class="flex justify-between gap-2">
+          <div class="flex min-w-[20rem] justify-between gap-2">
             @for (item of data(); track item.label) {
               <div class="flex-1 text-center">
                 <div class="text-[10px] text-slate-400 font-medium truncate leading-tight">{{ item.label }}</div>

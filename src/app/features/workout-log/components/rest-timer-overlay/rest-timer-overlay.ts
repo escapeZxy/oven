@@ -11,10 +11,12 @@ import { RestTimerService } from '../../services/rest-timer';
   imports: [CommonModule, MatButtonModule, MatIconModule, MatProgressBarModule],
   template: `
     @if (timer.isActive()) {
-      <div class="fixed bottom-24 right-6 z-50 w-80 bg-slate-900/95 backdrop-blur-md text-white rounded-2xl shadow-2xl border border-slate-700 overflow-hidden slide-in">
+      <div
+        class="slide-in fixed bottom-24 left-4 right-4 z-50 overflow-hidden rounded-2xl border border-slate-700 bg-slate-900/95 text-white shadow-2xl backdrop-blur-md sm:left-auto sm:right-6 sm:w-80"
+        style="bottom: calc(env(safe-area-inset-bottom, 0px) + 6rem);">
         <!-- Header -->
-        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-700/50">
-          <div class="flex items-center gap-2 text-indigo-400 font-bold">
+        <div class="flex items-center justify-between border-b border-slate-700/50 px-4 py-3">
+          <div class="flex items-center gap-2 font-bold text-indigo-400">
             <mat-icon class="!w-5 !h-5 !text-xl animate-pulse">timer</mat-icon>
             <span>组间休息</span>
           </div>
@@ -24,8 +26,8 @@ import { RestTimerService } from '../../services/rest-timer';
         </div>
 
         <!-- Timer Display -->
-        <div class="p-5 text-center space-y-4">
-          <div class="text-5xl font-black font-mono tracking-wider tabular-nums">
+        <div class="space-y-4 p-4 text-center sm:p-5">
+          <div class="font-mono text-4xl font-black tracking-wider tabular-nums sm:text-5xl">
             {{ formatTime(timer.remainingTime()) }}
           </div>
 
@@ -38,7 +40,7 @@ import { RestTimerService } from '../../services/rest-timer';
           </div>
 
           <!-- Quick Actions -->
-          <div class="grid grid-cols-2 gap-3 pt-2">
+          <div class="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-2">
             <button mat-stroked-button class="!border-slate-600 !text-slate-300 hover:!bg-slate-800" (click)="timer.addTime(30)">
               +30 秒
             </button>

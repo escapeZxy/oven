@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto p-6 space-y-10">
+<div class="mx-auto max-w-7xl space-y-8 px-4 py-4 sm:space-y-10 sm:p-6">
   <!-- Header -->
   <header class="flex flex-col md:flex-row md:items-center justify-between gap-4">
     <div>
@@ -7,7 +7,7 @@
     </div>
     <div class="flex flex-col items-stretch gap-3 md:items-end">
       <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-        <div class="flex items-center justify-between gap-4">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <div class="min-w-0">
             <p class="text-sm font-semibold text-slate-900">正式数据同步</p>
             @if (syncStatus() === 'syncing') {
@@ -31,7 +31,7 @@
         </div>
       </div>
       @if (authService.currentUser(); as currentUser) {
-        <div class="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+        <div class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
           <div class="min-w-0">
             <p class="text-sm font-semibold text-slate-900">
               {{ currentUser.displayName || currentUser.username }}
@@ -53,7 +53,7 @@
   <!-- Active Plan Hero Section -->
   <section>
     @if (workoutLogService.activePlan(); as activePlan) {
-      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 p-8 text-white shadow-2xl shadow-indigo-200/50">
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 p-5 text-white shadow-2xl shadow-indigo-200/50 sm:p-8">
         <!-- Background Decoration -->
         <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
         <div class="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-purple-500/20 blur-3xl"></div>
@@ -64,8 +64,8 @@
               <span class="inline-flex items-center rounded-full bg-white/20 px-3 py-1 text-xs font-medium text-white backdrop-blur-md">
                 当前激活计划
               </span>
-              <h2 class="text-4xl font-black">{{ activePlan.name }}</h2>
-              <p class="text-indigo-100 text-lg max-w-md">{{ activePlan.description }}</p>
+              <h2 class="break-words text-3xl font-black sm:text-4xl">{{ activePlan.name }}</h2>
+              <p class="max-w-md text-base text-indigo-100 sm:text-lg">{{ activePlan.description }}</p>
             </div>
 
             <div class="space-y-3">
@@ -104,13 +104,20 @@
         </div>
       </div>
     } @else {
-      <div class="rounded-3xl border-2 border-dashed border-slate-200 p-12 text-center bg-slate-50/50">
+      <div class="rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-8 text-center sm:p-12">
         <div class="mx-auto h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-4">
           <mat-icon class="!w-10 !h-10 !text-4xl">fitness_center</mat-icon>
         </div>
         <h3 class="text-xl font-bold text-slate-900">暂无活跃计划</h3>
         <p class="text-slate-500 mt-2 mb-6">你还没有激活任何锻炼计划。从下面的计划库中选择一个开始吧！</p>
-        <button mat-stroked-button color="primary" class="!rounded-xl">浏览计划库</button>
+        <button
+          mat-stroked-button
+          color="primary"
+          type="button"
+          class="!rounded-xl"
+          (click)="scrollToPlanLibrary()">
+          浏览计划库
+        </button>
       </div>
     }
   </section>
@@ -122,7 +129,7 @@
       <h2 class="text-2xl font-bold text-slate-900">训练数据</h2>
     </div>
 
-    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms" class="bg-transparent">
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="0ms" class="mobile-tab-group bg-transparent">
       <mat-tab label="周容量">
         <div class="pt-4">
           <app-volume-chart title="过去8周训练容量" [data]="weeklyVolume()"></app-volume-chart>
@@ -136,18 +143,18 @@
       <mat-tab label="计划完成率">
         <div class="pt-4">
           @if (planCompletionSummary(); as summary) {
-            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
               <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                 <div class="space-y-2">
                   <p class="text-sm font-medium text-slate-500">已完结计划完成率</p>
-                  <p class="text-4xl font-black text-slate-900">{{ summary.completionRate | number:'1.0-0' }}%</p>
+                  <p class="text-3xl font-black text-slate-900 sm:text-4xl">{{ summary.completionRate | number:'1.0-0' }}%</p>
                   <p class="text-sm text-slate-500">
                     已完成 {{ summary.completedPlanCount }} 个，未完成 {{ summary.interruptedPlanCount }} 个，进行中 {{ summary.activePlanCount }} 个
                   </p>
                 </div>
 
                 <div class="w-full max-w-xl space-y-4">
-                  <div class="flex justify-between text-sm font-medium text-slate-600">
+                  <div class="flex flex-col gap-1 text-sm font-medium text-slate-600 sm:flex-row sm:justify-between">
                     <span>统计口径</span>
                     <span>{{ summary.closedPlanCount }} 个已完结计划</span>
                   </div>
@@ -192,12 +199,12 @@
 
   <!-- History Plans Section -->
   <section class="space-y-6">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div class="flex items-center gap-3">
         <div class="h-8 w-1 bg-indigo-400 rounded-full"></div>
         <h2 class="text-2xl font-bold text-slate-900">历史记录</h2>
       </div>
-      <mat-chip-listbox aria-label="History Filter">
+      <mat-chip-listbox aria-label="History Filter" class="mobile-chip-list overflow-x-auto">
         <mat-chip-option selected (selectionChange)="historyFilter.set('all')">全部</mat-chip-option>
         <mat-chip-option (selectionChange)="historyFilter.set('completed')">已完成</mat-chip-option>
         <mat-chip-option (selectionChange)="historyFilter.set('interrupted')">未完成</mat-chip-option>
@@ -206,8 +213,8 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       @for (plan of filteredHistoryPlans(); track plan.userPlanId) {
-        <div class="bg-white rounded-2xl border border-slate-200 p-5 flex items-center justify-between shadow-sm hover:shadow-md transition-all group">
-          <div class="flex items-center gap-4">
+        <div class="group flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex min-w-0 items-center gap-4">
             <div
               class="h-12 w-12 rounded-xl flex items-center justify-center"
               [class.bg-yellow-100]="plan.status === 'completed'"
@@ -216,9 +223,9 @@
               [class.text-slate-500]="plan.status !== 'completed'">
               <mat-icon>{{ plan.status === 'completed' ? 'emoji_events' : 'pause_circle' }}</mat-icon>
             </div>
-            <div>
-              <h3 class="font-bold text-slate-900">{{ plan.name }}</h3>
-              <div class="flex items-center gap-2 text-xs text-slate-500 mt-1">
+            <div class="min-w-0">
+              <h3 class="truncate font-bold text-slate-900">{{ plan.name }}</h3>
+              <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
                 @if (plan.status === 'completed') {
                   <span class="text-yellow-600 font-medium">已完成</span>
                   <span>•</span>
@@ -232,7 +239,7 @@
             </div>
           </div>
 
-          <div class="flex items-center gap-2">
+          <div class="flex items-center justify-end gap-2">
             @if (plan.status === 'interrupted') {
               <button mat-icon-button color="primary" matTooltip="继续训练" (click)="resumePlan(plan.userPlanId)">
                 <mat-icon>play_arrow</mat-icon>
@@ -268,7 +275,7 @@
       <h2 class="text-2xl font-bold text-slate-900">发现更多计划</h2>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div #planLibrarySection class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       @for (plan of workoutLogService.availablePlans(); track plan.id) {
         <mat-card class="!rounded-2xl !border-none !shadow-sm hover:!shadow-xl transition-all duration-300 group overflow-hidden cursor-pointer" [routerLink]="[plan.id]">
           <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">

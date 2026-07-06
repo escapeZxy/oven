@@ -1,13 +1,13 @@
 <div class="min-h-screen bg-slate-50">
   @if (todaysWorkout(); as workout) {
     <!-- Hero Header -->
-    <div class="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 pt-12 pb-24 text-white shadow-xl">
+    <div class="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 pb-20 pt-10 text-white shadow-xl sm:pb-24 sm:pt-12">
       <!-- Decoration -->
       <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
       <div class="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-purple-500/20 blur-3xl"></div>
 
-      <div class="max-w-4xl mx-auto px-6 relative z-10">
-        <div class="flex items-center gap-4 mb-6">
+      <div class="relative z-10 mx-auto max-w-4xl px-4 sm:px-6">
+        <div class="mb-5 flex items-center gap-3 sm:mb-6 sm:gap-4">
           <a mat-icon-button routerLink="/workout-log" class="!bg-white/10 !text-white backdrop-blur-md">
             <mat-icon>arrow_back</mat-icon>
           </a>
@@ -15,13 +15,13 @@
             {{ workout.planName }}
           </span>
         </div>
-        <h1 class="text-4xl font-black mb-2">{{ workout.dayName }}</h1>
-        <p class="text-indigo-100 text-lg opacity-90">{{ getSessionSubtitle() }}</p>
+        <h1 class="mb-2 break-words text-3xl font-black sm:text-4xl">{{ workout.dayName }}</h1>
+        <p class="text-base text-indigo-100 opacity-90 sm:text-lg">{{ getSessionSubtitle() }}</p>
       </div>
     </div>
 
     <!-- Main Content -->
-    <main class="max-w-4xl mx-auto px-6 -mt-12 pb-32 relative z-20">
+    <main class="relative z-20 mx-auto -mt-10 max-w-4xl px-4 pb-40 sm:-mt-12 sm:px-6 sm:pb-32">
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-8">
         <section
           class="rounded-3xl border border-indigo-100 bg-white/95 p-5 shadow-sm"
@@ -58,7 +58,7 @@
         </section>
 
         @if (isRestDay()) {
-          <section class="rounded-3xl border border-emerald-100 bg-white/95 p-6 shadow-sm">
+          <section class="rounded-3xl border border-emerald-100 bg-white/95 p-5 shadow-sm sm:p-6">
             <div class="flex items-start gap-4">
               <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600">
                 <mat-icon>hotel</mat-icon>
@@ -76,13 +76,13 @@
             @for (exerciseCtrl of exercises.controls; track $index; let exIndex = $index) {
               <div [formGroupName]="exIndex" class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
                 <!-- Exercise Header -->
-                <div class="bg-slate-50/50 p-6 flex justify-between items-center border-b border-slate-100">
-                  <div class="flex items-center gap-4">
+                <div class="flex flex-col gap-4 border-b border-slate-100 bg-slate-50/50 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+                  <div class="flex items-start gap-4 sm:items-center">
                     <div class="h-12 w-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xl">
                       {{ exIndex + 1 }}
                     </div>
                     <div>
-                      <h3 class="text-xl font-bold text-slate-900">{{ exerciseCtrl.get('name')?.value }}</h3>
+                      <h3 class="text-lg font-bold text-slate-900 sm:text-xl">{{ exerciseCtrl.get('name')?.value }}</h3>
                       <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
                         <span class="text-xs font-medium text-slate-500 flex items-center gap-1">
                           <mat-icon class="!w-4 !h-4 !text-base">refresh</mat-icon>
@@ -102,9 +102,9 @@
                 </div>
 
                 <!-- Sets List -->
-                <div class="p-6">
+                <div class="p-4 sm:p-6">
                   <div formArrayName="sets" class="space-y-4">
-                    <div class="grid grid-cols-12 gap-4 px-2 mb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
+                    <div class="mb-2 hidden grid-cols-12 gap-4 px-2 text-xs font-bold uppercase tracking-wider text-slate-400 sm:grid">
                       <div class="col-span-1 text-center">#</div>
                       <div class="col-span-5">重量 (KG)</div>
                       <div class="col-span-5">次数</div>
@@ -113,10 +113,10 @@
 
                     @for (setCtrl of getSets(exIndex).controls; track $index; let setIndex = $index) {
                       <div [formGroupName]="setIndex"
-                           class="grid grid-cols-12 gap-4 items-center p-3 rounded-2xl bg-slate-50/50 hover:bg-slate-50 transition-colors"
+                           class="grid grid-cols-2 gap-3 rounded-2xl bg-slate-50/50 p-3 transition-colors hover:bg-slate-50 sm:grid-cols-12 sm:gap-4 sm:items-center"
                            [class.bg-green-50]="setCtrl.get('completed')?.value"
                            [class.border-green-200]="setCtrl.get('completed')?.value">
-                        <div class="col-span-1 flex justify-center">
+                        <div class="col-span-1 flex justify-start sm:justify-center">
                           <span class="h-8 w-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-sm font-bold text-slate-600 shadow-sm"
                                 [class.bg-green-500]="setCtrl.get('completed')?.value"
                                 [class.text-white]="setCtrl.get('completed')?.value"
@@ -124,18 +124,41 @@
                             {{ setIndex + 1 }}
                           </span>
                         </div>
-                        <div class="col-span-5">
+                        <div class="col-span-1 flex justify-end sm:col-span-1 sm:justify-center">
+                          <div class="flex items-center gap-2 sm:block">
+                            <span class="text-xs font-medium text-slate-500 sm:hidden">完成</span>
+                            <mat-checkbox
+                              color="primary"
+                              [aria-label]="'第 ' + (setIndex + 1) + ' 组完成状态'"
+                              formControlName="completed"
+                              (change)="onSetCompleted($event.checked)"></mat-checkbox>
+                          </div>
+                        </div>
+                        <div class="col-span-2 sm:col-span-5">
+                          <label class="mb-1 block text-xs font-medium text-slate-500 sm:hidden">重量 (KG)</label>
                           <mat-form-field appearance="outline" class="w-full !mb-[-1.25em]">
-                            <input matInput type="number" formControlName="weight" placeholder="0">
+                            <input
+                              matInput
+                              type="number"
+                              inputmode="decimal"
+                              min="0"
+                              step="0.5"
+                              formControlName="weight"
+                              placeholder="0">
                           </mat-form-field>
                         </div>
-                        <div class="col-span-5">
+                        <div class="col-span-2 sm:col-span-5">
+                          <label class="mb-1 block text-xs font-medium text-slate-500 sm:hidden">次数</label>
                           <mat-form-field appearance="outline" class="w-full !mb-[-1.25em]">
-                            <input matInput type="number" formControlName="reps" placeholder="0">
+                            <input
+                              matInput
+                              type="number"
+                              inputmode="numeric"
+                              min="1"
+                              step="1"
+                              formControlName="reps"
+                              placeholder="0">
                           </mat-form-field>
-                        </div>
-                        <div class="col-span-1 flex justify-center">
-                          <mat-checkbox color="primary" formControlName="completed" (change)="onSetCompleted($event.checked)"></mat-checkbox>
                         </div>
                       </div>
                     }
@@ -156,12 +179,14 @@
         }
 
         <!-- Sticky Footer Actions -->
-        <div class="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-xl border-t border-slate-200 shadow-2xl z-50">
-          <div class="max-w-4xl mx-auto flex gap-4">
-            <button type="button" mat-stroked-button color="warn" class="!h-14 !px-8 !rounded-xl !text-lg !font-bold flex-1" (click)="onSkip()" [disabled]="isSubmitting()">
+        <div
+          class="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white/80 p-4 shadow-2xl backdrop-blur-xl sm:p-6"
+          style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);">
+          <div class="mx-auto flex max-w-4xl flex-col gap-3 sm:flex-row sm:gap-4">
+            <button type="button" mat-stroked-button color="warn" class="!h-12 !rounded-xl !px-6 !text-base !font-bold sm:!h-14 sm:!px-8 sm:!text-lg flex-1" (click)="onSkip()" [disabled]="isSubmitting()">
               跳过今日
             </button>
-            <button type="submit" mat-flat-button color="accent" class="!h-14 !px-12 !rounded-xl !text-lg !font-bold flex-[2] shadow-lg shadow-orange-500/20" [disabled]="!canSubmitCompletedWorkout() || isSubmitting()">
+            <button type="submit" mat-flat-button color="accent" class="!h-12 !rounded-xl !px-6 !text-base !font-bold shadow-lg shadow-orange-500/20 sm:!h-14 sm:!px-12 sm:!text-lg flex-[2]" [disabled]="!canSubmitCompletedWorkout() || isSubmitting()">
               @if (isSubmitting()) {
                 <span class="flex items-center gap-2">
                   正在保存...

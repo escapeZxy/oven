@@ -15,6 +15,7 @@
     "@angular/forms": "^21.0.0 || ^22.0.0",
     "@angular/material": "^21.0.3",
     "@angular/platform-browser": "^21.0.5",
+    "@angular/service-worker": "21.0.5",
     "@oven/core": "file:packages/core",
     "@prisma/client": "^7.8.0",
     "dexie": "^4.3.0",

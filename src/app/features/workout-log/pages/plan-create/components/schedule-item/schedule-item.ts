@@ -29,7 +29,7 @@ import { ScheduleList } from '../schedule-list/schedule-list';
     <div [formGroup]="formGroup" class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
       <!-- Item Header -->
       <div class="bg-slate-50/50 p-4 border-b border-slate-100 flex items-start md:items-center justify-between gap-4 flex-col md:flex-row">
-        <div class="flex items-center gap-3 flex-1 w-full">
+        <div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
           <!-- Type Badge -->
           <div class="h-10 w-10 rounded-xl flex items-center justify-center font-bold text-sm"
                [class.bg-purple-100]="isCycle"
@@ -49,7 +49,7 @@ import { ScheduleList } from '../schedule-list/schedule-list';
 
           <!-- Cycle Repeats Input -->
           @if (isCycle) {
-            <mat-form-field appearance="outline" class="w-32 !mb-[-1.25em]">
+            <mat-form-field appearance="outline" class="w-full sm:w-32 !mb-[-1.25em]">
               <mat-label>重复次数</mat-label>
               <input matInput type="number" formControlName="repeats" min="1" [readonly]="readonly" />
               <span matTextSuffix>次</span>
@@ -58,7 +58,7 @@ import { ScheduleList } from '../schedule-list/schedule-list';
         </div>
 
         @if (!readonly) {
-          <button mat-icon-button color="warn" type="button" (click)="remove.emit()" matTooltip="删除">
+          <button mat-icon-button color="warn" type="button" class="self-end md:self-auto" (click)="remove.emit()" matTooltip="删除">
             <mat-icon>delete_outline</mat-icon>
           </button>
         }
@@ -68,7 +68,7 @@ import { ScheduleList } from '../schedule-list/schedule-list';
       <div class="p-4">
         @if (isCycle) {
           <!-- Recursive List for Cycle -->
-          <div class="pl-4 border-l-2 border-purple-100">
+          <div class="border-l-2 border-purple-100 pl-3 sm:pl-4">
             <app-schedule-list [formArray]="itemsArray" [readonly]="readonly"></app-schedule-list>
           </div>
         } @else if (isRestDay) {
@@ -104,7 +104,7 @@ import { ScheduleList } from '../schedule-list/schedule-list';
 
                 @if (!readonly) {
                   <div class="md:col-span-1 flex justify-end">
-                    <button mat-icon-button color="warn" type="button" (click)="removeExercise(j)" class="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button mat-icon-button color="warn" type="button" (click)="removeExercise(j)" class="opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
                       <mat-icon>close</mat-icon>
                     </button>
                   </div>
@@ -113,7 +113,7 @@ import { ScheduleList } from '../schedule-list/schedule-list';
             }
 
             @if (!readonly) {
-              <button mat-button color="primary" type="button" (click)="addExercise()">
+              <button mat-button color="primary" type="button" class="w-full justify-center sm:w-auto" (click)="addExercise()">
                 <mat-icon>add_circle_outline</mat-icon>
                 添加动作
               </button>

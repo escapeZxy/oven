@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { UserPlanCompletionSummary } from '@oven/core';
 import { WorkoutLogService } from '../../data-access/workout-log.service';
@@ -47,6 +55,8 @@ export class LogListComponent {
   protected readonly authService = inject(AuthService);
   private readonly statisticsService = inject(WorkoutStatisticsService);
   private readonly router = inject(Router);
+  private readonly planLibrarySection =
+    viewChild<ElementRef<HTMLElement>>('planLibrarySection');
 
   protected readonly historyFilter = signal<'all' | 'completed' | 'interrupted'>('all');
   protected readonly weeklyVolume = computed<ChartData[]>(() =>
@@ -93,6 +103,13 @@ export class LogListComponent {
   protected async logout(): Promise<void> {
     await this.authService.logout();
     await this.router.navigate(['/auth/login']);
+  }
+
+  protected scrollToPlanLibrary(): void {
+    this.planLibrarySection()?.nativeElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
   }
 
   protected readonly filteredHistoryPlans = computed(() => {

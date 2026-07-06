@@ -13,6 +13,7 @@ exports.UserPlansService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const client_1 = require("../generated/prisma/client");
+const workout_plan_normalizer_1 = require("../workout-plans/workout-plan-normalizer");
 const userPlanWithLogs = {
     logs: {
         orderBy: {
@@ -181,7 +182,7 @@ let UserPlansService = class UserPlansService {
             throw new common_1.BadRequestException('Skipped workout logs must not include completed exercise payload.');
         }
         if (dto.logStatus === client_1.WorkoutLogStatus.completed) {
-            this.validateCompletedExercises(dto.completedExercises);
+            this.validateCompletedExercises(dto.completedExercises, commitBoundary.currentTrainingDay);
         }
         try {
             await this.prisma.$transaction(async (prisma) => {
@@ -393,7 +394,13 @@ let UserPlansService = class UserPlansService {
             isActive: true,
         };
     }
-    validateCompletedExercises(exercises) {
+    validateCompletedExercises(exercises, trainingDay) {
+        if (trainingDay.type === 'rest') {
+            if (exercises.length > 0) {
+                throw new common_1.BadRequestException(`Rest day "${trainingDay.id}" must not include completed exercise payload.`);
+            }
+            return;
+        }
         if (exercises.length === 0) {
             throw new common_1.BadRequestException('Completed workout logs must include at least one completed set.');
         }
@@ -438,11 +445,16 @@ let UserPlansService = class UserPlansService {
         };
     }
     flattenWorkoutPlan(plan) {
-        const schedule = this.readSchedule(plan.schedule);
+        var _a;
+        const normalized = (0, workout_plan_normalizer_1.normalizeWorkoutPlanStructure)(plan.id, {
+            schedule: this.readSchedule(plan.schedule),
+            trainingDays: this.readTrainingDays(plan.trainingDays),
+        });
+        const schedule = normalized.schedule;
         if (schedule && schedule.length > 0) {
             return this.flattenScheduleItems(schedule);
         }
-        return this.readTrainingDays(plan.trainingDays);
+        return (_a = normalized.trainingDays) !== null && _a !== void 0 ? _a : [];
     }
     flattenScheduleItems(items) {
         const flattened = [];

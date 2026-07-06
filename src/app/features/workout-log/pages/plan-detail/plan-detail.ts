@@ -16,23 +16,23 @@ import { ScheduleList } from '../plan-create/components/schedule-list/schedule-l
       @if (plan(); as currentPlan) {
         <!-- Header -->
         <div class="bg-white border-b border-slate-200 sticky top-0 z-30">
-          <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-4">
+          <div class="mx-auto flex min-h-16 max-w-5xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div class="flex min-w-0 items-center gap-3 sm:gap-4">
               <button mat-icon-button (click)="goBack()">
                 <mat-icon>arrow_back</mat-icon>
               </button>
-              <h1 class="text-xl font-bold text-slate-900">{{ currentPlan.name }}</h1>
+              <h1 class="truncate text-lg font-bold text-slate-900 sm:text-xl">{{ currentPlan.name }}</h1>
             </div>
-            <button mat-flat-button color="primary" (click)="startPlan(currentPlan)" class="!rounded-lg">
+            <button mat-flat-button color="primary" (click)="startPlan(currentPlan)" class="!rounded-lg w-full sm:w-auto">
               <mat-icon class="mr-2">play_arrow</mat-icon>
               开始此计划
             </button>
           </div>
         </div>
 
-        <main class="max-w-5xl mx-auto px-6 py-8 space-y-8">
+        <main class="mx-auto max-w-5xl space-y-8 px-4 py-6 sm:px-6 sm:py-8">
           <!-- Description Card -->
-          <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
+          <div class="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm sm:p-8">
             <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
               <mat-icon class="text-indigo-500">info</mat-icon>
               计划简介
@@ -128,7 +128,7 @@ export class PlanDetail {
     );
 
     return this.fb.group({
-      type: ['day'],
+      type: [item.type],
       name: [item.name],
       exercises: exercisesArray
     });
